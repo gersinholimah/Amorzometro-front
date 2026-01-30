@@ -1,0 +1,11 @@
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-criar-pagina',
+  imports: [],
+  templateUrl: './criar-pagina.html',
+  styleUrl: './criar-pagina.css',
+})
+export class CriarPagina {
+
+}
