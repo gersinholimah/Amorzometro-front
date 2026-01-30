@@ -8,6 +8,7 @@ import { Routes } from '@angular/router';
 import { CriarPagina } from './modules/compra/pages/criar-pagina/criar-pagina';
 import { Pagamento } from './modules/compra/pages/pagamento/pagamento';
 import { perfilGuard } from './shared/guards/perfil-guard';
+import { ACESSO_ROUTES } from './modules/acesso/acesso.routes';
 
 
 export const routes: Routes = [
@@ -15,28 +16,22 @@ export const routes: Routes = [
   //  PÚBLICAS
   {
     path: PATH_MODULO.COMPRA,
-    canActivate: [usuarioNaoAutenticadoGuard],
     children: [
       {
-        path: ROTAS.COMPRA.CRIAR_PAGINA,
-        loadComponent: () =>
-          import('./modules/compra/pages/criar-pagina/criar-pagina')
-            .then(m => m.CriarPagina),
-      },
-      {
-        path: ROTAS.COMPRA.PAGAMENTO,
-        loadComponent: () =>
-          import('./modules/compra/pages/pagamento/pagamento')
-            .then(m => m.Pagamento),
-      },
+        loadChildren: () =>//loadComponent
+          import('./modules/compra/compra.routes').then(m => m.COMPRA_ROUTES),
+      }
     ]
   },
 
   {
     path: PATH_MODULO.ACESSO,
-    loadComponent: () =>
-      import('./modules/acesso/pages/login/login').then(m => m.Login),
     canActivate: [usuarioNaoAutenticadoGuard],
+    children: [
+      {
+        loadChildren: () =>
+          import('./modules/acesso/acesso.routes').then(m => m.ACESSO_ROUTES)
+      },]
   },
 
   //AUTENTICADAS
@@ -48,8 +43,8 @@ export const routes: Routes = [
       {
         path: PATH_MODULO.CLIENTE,
         loadChildren: () =>
-          import('./modules/cliente/cliente.router')
-            .then(m => m.AREA_CLIENTE_ROUTES),
+          import('./modules/cliente/cliente.routes')
+            .then(m => m.CLIENTE_ROUTES),
         canActivate: [perfilGuard],
         data: { roles: [ROLES.CLIENTE] }
       },
@@ -57,8 +52,8 @@ export const routes: Routes = [
       {
         path: PATH_MODULO.ADMIN,
         loadChildren: () =>
-          import('./modules/admin/admin.router')
-            .then(m => m.ADMINISTRACAO_ROUTES),
+          import('./modules/admin/admin.routes')
+            .then(m => m.ADMIN_ROUTES),
         canActivate: [perfilGuard],
         data: { roles: [ROLES.ADMIN] }
       },
