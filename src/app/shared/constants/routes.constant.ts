@@ -16,6 +16,36 @@ export const PATH_MODULO = {
   CLIENTE: 'cliente'
 };
 
+export const PATH_CLIENTE = {
+  DETALHE_PAGINA: 'detalhe-pagina',
+  EDITAR_PAGINA: 'editar-pagina',
+  MEUS_PEDIDOS: 'meus-pedidos',
+  ALTERAR_SENHA: 'alterar-senha',
+  PERFIL: 'perfil'
+};
+
+export const PATH_ADMIN = {
+  CONFIGURACAO_SITE: 'configuracao-site',
+  DASHBOARD: 'dashboard',
+  PAGAMENTOS: 'pagamentos',
+  PLANOS: 'planos',
+  USUARIOS: 'usuarios'
+};
+
+export const PATH_COMPRA = {
+  CRIAR_PAGINA: 'criar-pagina',
+  PAGAMENTO: 'pagamento'
+};
+
+
+export const PATH_ACESSO = {
+  LOGIN: 'login',
+  RECUPERAR_SENHA: 'recuperar-senha',
+};
+
+
+
+
 export const ROTAS = {
   HOME: 'auth/home',
   ERROR_400: 'error-400',
