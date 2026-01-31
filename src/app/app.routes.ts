@@ -33,6 +33,11 @@ export const routes: Routes = [
       }
     ]
   },
+  {
+    path: PATH_MODULO.COMPLIANCE,
+    loadChildren: () =>
+      import('./modules/compliance/compliance.routes').then(m => m.COMPLIANCE_ROUTES),
+  },
 
   {
     path: PATH_MODULO.ACESSO,
@@ -71,7 +76,6 @@ export const routes: Routes = [
   },
 
   { path: '**', redirectTo: '' }
-    // { path: '**', redirectTo: PATH_MODULO.ACESSO },
 
 
 ];
