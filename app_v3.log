@@ -1,0 +1,44 @@
+
+> amorzometro@0.0.0 start
+> ng serve
+
+❯ Building...
+✔ Building...
+Initial chunk files | Names             |  Raw size
+main.js             | main              |  51.15 kB |
+chunk-DPXFUCU4.js   | -                 | 930 bytes |
+styles.css          | styles            |  95 bytes |
+
+                    | Initial total     |  52.17 kB
+
+Lazy chunk files    | Names             |  Raw size
+chunk-7PQRXWUA.js   | configuracao-site |   2.01 kB |
+chunk-F764PUSX.js   | recuperar-senha   |   1.96 kB |
+chunk-UOETKFXN.js   | detalhe-pagina    |   1.94 kB |
+chunk-OHMROQAR.js   | editar-pagina     |   1.91 kB |
+chunk-EG342RPX.js   | alterar-senha     |   1.91 kB |
+chunk-QQQJOI52.js   | meus-pedidos      |   1.89 kB |
+chunk-T3MTHZ5Z.js   | criar-pagina      |   1.89 kB |
+chunk-7JTVX57I.js   | pagamentos        |   1.85 kB |
+chunk-EXCKR3JR.js   | pagamento         |   1.83 kB |
+chunk-SBBQCRI7.js   | dashboard         |   1.82 kB |
+chunk-RWPYCP75.js   | usuarios          |   1.80 kB |
+chunk-JGRKLE7D.js   | perfil            |   1.75 kB |
+chunk-BNSFAF3H.js   | planos            |   1.75 kB |
+chunk-7R7HJPBL.js   | login             |   1.73 kB |
+chunk-CEUXS7IJ.js   | cliente-routes    | 895 bytes |
+...and 3 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [4.618 seconds] - 2026-01-31T13:59:28.652Z
+
+Watch mode enabled. Watching for file changes...
+NOTE: Raw file sizes do not reflect development server per-request transformations.
+  ➜  Local:   http://localhost:4200/
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names | Raw size
+main.js             | main  | 51.06 kB |
+
+Application bundle generation complete. [0.312 seconds] - 2026-01-31T14:01:24.871Z
+
+Page reload sent to client(s).
