@@ -13,7 +13,8 @@ export const PATH_MODULO = {
   ACESSO: 'acesso',
   COMPRA: 'compra',
   ADMIN: 'admin',
-  CLIENTE: 'cliente'
+  CLIENTE: 'cliente',
+  HOME: 'home'
 };
 
 export const PATH_CLIENTE = {
@@ -47,7 +48,6 @@ export const PATH_ACESSO = {
 
 
 export const ROTAS = {
-  HOME: 'auth/home',
   ERROR_400: 'error-400',
   ERROR_500: 'error-500',
 
@@ -60,6 +60,9 @@ export const ROTAS = {
   COMPRA: {
     CRIAR_PAGINA:'criar-pagina',
     PAGAMENTO:'pagamento',
+  },
+
+  HOME: {
     TERMO_DE_USO:'termo-de-uso',
     POLITICA_PRIVACIDADE:'politica-privacidade'
   },
