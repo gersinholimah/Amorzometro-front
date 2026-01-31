@@ -1,1 +1,84 @@
-<p>login works!</p>
+<div class="page">
+
+  <!-- Título -->
+  <div class="header">
+    <h2>Tempo Juntos</h2>
+    <p>São poucos passos para um presente único</p>
+  </div>
+
+  <!-- Vamos começar -->
+  <mat-card>
+    <h3>Vamos começar</h3>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Nome pessoa 1</mat-label>
+      <input matInput required />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Nome pessoa 2</mat-label>
+      <input matInput required />
+    </mat-form-field>
+  </mat-card>
+
+  <!-- Nosso Dia -->
+  <mat-card class="center">
+    <h3>Nosso Dia</h3>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Data especial</mat-label>
+      <input matInput [matDatepicker]="picker" />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <small>20 de janeiro de 2026</small>
+  </mat-card>
+
+  <!-- Nossos Momentos -->
+  <mat-card>
+    <h3 class="center">Nossos Momentos</h3>
+
+    <div class="photos">
+      <div class="photo" *ngFor="let p of [1,2,3]">
+        <mat-icon>photo</mat-icon>
+      </div>
+    </div>
+
+    <button mat-stroked-button color="warn" class="full">
+      Selecionar fotos
+    </button>
+  </mat-card>
+
+  <!-- Música -->
+  <mat-card class="center">
+    <h3>Música</h3>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Link da música (Spotify)</mat-label>
+      <input matInput />
+    </mat-form-field>
+  </mat-card>
+
+  <!-- Mensagem -->
+  <mat-card>
+    <h3 class="center">O mais importante</h3>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Mensagem especial</mat-label>
+      <textarea matInput rows="4"></textarea>
+    </mat-form-field>
+  </mat-card>
+
+  <!-- Plano -->
+  <mat-card class="center">
+    <h3>Plano</h3>
+
+    <div class="plans">
+      <button mat-stroked-button color="primary">Para Sempre</button>
+      <button mat-stroked-button>Por 1 Ano</button>
+      <button mat-stroked-button>Por 1 Mês</button>
+    </div>
+  </mat-card>
+
+</div>
