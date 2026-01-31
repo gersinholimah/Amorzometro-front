@@ -1,3 +1,5 @@
+import { Role } from '../constants/routes.constant';
+
 export interface IDadosDaSessao {
   milissegundos: string;
   segundos: string;
@@ -7,6 +9,7 @@ export interface IDadosDaSessao {
   ano: string;
   mes: string;
   dia: string;
+  role: Role;
   nome: string;
   matricula: string;
   token: string;
