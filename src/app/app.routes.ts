@@ -19,10 +19,10 @@ export const routes: Routes = [
 // { path: '', pathMatch: 'full', redirectTo: PATH_MODULO.HOME},
 { path: '', component: Home},
 { path: 'home', component: Home},
-{
-  path: PATH_MODULO.ADMIN, loadComponent: () =>
-    import('./modules/admin/pages/dashboard/dashboard').then(m => m.Dashboard)
-},
+// {
+//   path: PATH_MODULO.ADMIN, loadComponent: () =>
+//     import('./modules/admin/pages/dashboard/dashboard').then(m => m.Dashboard)
+// },
 {
     path: PATH_MODULO.COMPRA,
 

@@ -14,7 +14,8 @@ export const PATH_MODULO = {
   COMPRA: 'compra',
   ADMIN: 'admin',
   CLIENTE: 'cliente',
-  HOME: 'home'
+  HOME: 'home',
+  COMPLIANCE: 'compliance'
 };
 
 export const PATH_CLIENTE = {
@@ -23,6 +24,11 @@ export const PATH_CLIENTE = {
   MEUS_PEDIDOS: 'meus-pedidos',
   ALTERAR_SENHA: 'alterar-senha',
   PERFIL: 'perfil'
+};
+
+export const PATH_COMPLIANCE = {
+  POLITICA_PRIVACIDADE: 'politica-privacidade',
+  TERMOS_USO: 'termos-uso'
 };
 
 export const PATH_ADMIN = {
@@ -55,6 +61,11 @@ export const ROTAS = {
     LOGIN:'login',
     RECUPERAR_SENHA:'recuperar-senha',
     NOVA_SENHA:'nova-senha'
+  },
+
+  COMPLIANCE: {
+    POLITICA_PRIVACIDADE:'politica-privacidade',
+    TERMO_DE_USO:'termo-de-uso'
   },
 
   COMPRA: {
