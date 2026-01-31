@@ -14,7 +14,8 @@ export const PATH_MODULO = {
   COMPRA: 'compra',
   ADMIN: 'admin',
   CLIENTE: 'cliente',
-  HOME: 'home'
+  HOME: 'home',
+  COMPLIANCE: 'compliance'
 };
 
 export const PATH_CLIENTE = {
@@ -22,7 +23,8 @@ export const PATH_CLIENTE = {
   EDITAR_PAGINA: 'editar-pagina',
   MEUS_PEDIDOS: 'meus-pedidos',
   ALTERAR_SENHA: 'alterar-senha',
-  PERFIL: 'perfil'
+  PERFIL: 'perfil',
+  MINHAS_COMPRAS: 'minhas-compras'
 };
 
 export const PATH_ADMIN = {
@@ -38,13 +40,15 @@ export const PATH_COMPRA = {
   PAGAMENTO: 'pagamento'
 };
 
+export const PATH_COMPLIANCE = {
+  TERMO_DE_USO: 'termo-de-uso',
+  POLITICA_PRIVACIDADE: 'politica-privacidade'
+};
 
 export const PATH_ACESSO = {
   LOGIN: 'login',
   RECUPERAR_SENHA: 'recuperar-senha',
 };
-
-
 
 
 export const ROTAS = {
@@ -62,17 +66,23 @@ export const ROTAS = {
     PAGAMENTO:'pagamento',
   },
 
+  COMPLIANCE: {
+    TERMO_DE_USO: 'compliance/termo-de-uso',
+    POLITICA_PRIVACIDADE: 'compliance/politica-privacidade'
+  },
+
   HOME: {
     TERMO_DE_USO:'termo-de-uso',
     POLITICA_PRIVACIDADE:'politica-privacidade'
   },
 
-  CLINTE: {
-    EDITAR: 'auth/cliente/editar',
+  CLIENTE: {
+    EDITAR_PAGINA: 'auth/cliente/editar-pagina',
     PERFIL: 'auth/cliente/perfil',
-    HISTORICO_PAGAMENTO: 'auth/cliente/historico-pagamento',
-    PAGINA_DETALHE: 'auth/cliente/pagina-detalhe',
-    PAGINAS: 'auth/cliente/paginas'
+    MEUS_PEDIDOS: 'auth/cliente/meus-pedidos',
+    DETALHE_PAGINA: 'auth/cliente/detalhe-pagina',
+    MINHAS_COMPRAS: 'auth/cliente/minhas-compras',
+    ALTERAR_SENHA: 'auth/cliente/alterar-senha'
   },
 
   ADMIN: {
