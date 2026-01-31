@@ -7,13 +7,23 @@ import { PATH_MODULO, ROLES, ROTAS, STATUS } from './shared/constants/routes.con
 import { Routes } from '@angular/router';
 import { CriarPagina } from './modules/compra/pages/criar-pagina/criar-pagina';
 import { Pagamento } from './modules/compra/pages/pagamento/pagamento';
-import { perfilGuard } from './shared/guards/perfil-guard';
+import { roleGuard } from './shared/guards/role-guard';
 import { ACESSO_ROUTES } from './modules/acesso/acesso.routes';
 
 
 export const routes: Routes = [
 
   //  PÚBLICAS
+{
+  path: '',
+  redirectTo: PATH_MODULO.HOME,
+  pathMatch: 'full'
+},
+{
+  path: PATH_MODULO.HOME,
+  loadComponent: () =>
+    import('./modules/home/pages/home/home').then(m => m.Home)
+},
   {
     path: PATH_MODULO.COMPRA,
     children: [
@@ -45,7 +55,7 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./modules/cliente/cliente.routes')
             .then(m => m.CLIENTE_ROUTES),
-        canActivate: [perfilGuard],
+        canActivate: [roleGuard],
         data: { roles: [ROLES.CLIENTE] }
       },
 
@@ -54,13 +64,16 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./modules/admin/admin.routes')
             .then(m => m.ADMIN_ROUTES),
-        canActivate: [perfilGuard],
+        canActivate: [roleGuard],
         data: { roles: [ROLES.ADMIN] }
       },
     ],
   },
 
-  { path: '**', redirectTo: PATH_MODULO.ACESSO },
+  { path: '**', redirectTo: '' }
+    // { path: '**', redirectTo: PATH_MODULO.ACESSO },
+
+
 ];
 
 
@@ -68,65 +81,3 @@ export const routes: Routes = [
 
 
 
-
-
-
-
-/*
-export const routes: Routes = [
-  {
-    path: PATH_MODULO.ACESSO,
-    loadComponent: () =>
-      import('./modules/acesso/pages/login/login').then(
-        (m) => m.Login
-      ),
-    canActivate: [usuarioNaoAutenticadoGuard],
-  },
-    {
-    path: PATH_MODULO.COMPRA,
-    loadComponent: () =>
-      import('./modules/compra/pages/pagamento/pagamento').then(
-        (m) => m.Pagamento
-      ),
-    canActivate: [usuarioNaoAutenticadoGuard],
-  },
-      {
-    path: PATH_MODULO.ACESSO,
-    loadComponent: () =>
-      import('./modules/acesso/pages/login/login').then(
-        (m) => m.Login
-      ),
-    canActivate: [usuarioNaoAutenticadoGuard],
-  },
-        {
-    path: PATH_MODULO.ACESSO,
-    loadComponent: () =>
-      import('./modules/acesso/pages/recuperar-senha/recuperar-senha').then(
-        (m) => m.RecuperarSenha
-      ),
-    canActivate: [usuarioNaoAutenticadoGuard],
-  },
-
-  {
-    path: STATUS.AUTENTICADO,
-    canActivate: [usuarioAutenticadoGuard],
-    children: [
-      {
-        path: PATH_MODULO.CLIENTE,
-        loadChildren: () =>
-          import('./modules/area-cliente/area-cliente.router').then(
-            (m) => m.AREA_CLIENTE_ROUTES),
-      },
-      {
-        path: PATH_MODULO.ADMINISTRADOR,
-        loadChildren: () =>
-          import('./modules/administracao/administracao.router').then(
-            (m) => m.ADMINISTRACAO_ROUTES),
-      },
-      { path: '', redirectTo: PATH_MODULO.COMPRA, pathMatch: 'full' },
-    ],
-  },
-
-  { path: '**', redirectTo: PATH_MODULO.ACESSO },
-];
-*/
