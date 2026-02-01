@@ -26,20 +26,19 @@ mat-form-field {
 }
 
 .photos {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
   margin-bottom: 12px;
+
+  overflow-x: auto;
+  max-width: 100%;
+  padding-bottom: 4px;
 }
 
-.photo {
-  border: 1px dashed #ccc;
-  border-radius: 8px;
-  height: 72px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+
+
+
 
 .full {
   width: 100%;
@@ -49,4 +48,45 @@ mat-form-field {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+
+
+.photo {
+  width: 100px;
+  height: 150px;
+  flex: 0 0 auto;
+
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  cursor: grab;
+  touch-action: none;
+
+  border: 1px dashed #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  button {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: rgba(255, 255, 255, 0.9);
+  }
+}
+
+.cdk-drag-preview {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
 }

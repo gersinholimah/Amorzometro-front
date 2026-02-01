@@ -1,4 +1,8 @@
-<div class="page">
+<form
+  class="page"
+  [formGroup]="form"
+  (ngSubmit)="submit()"
+>
 
   <!-- Título -->
   <div class="header">
@@ -12,12 +16,30 @@
 
     <mat-form-field appearance="outline">
       <mat-label>Nome pessoa 1</mat-label>
-      <input matInput required />
+      <input matInput formControlName="nome1" />
+
+<mat-error *ngIf="hasError('nome1', 'required')">
+  Campo obrigatório
+</mat-error>
+
+<mat-error *ngIf="hasError('nome1', 'minlength')">
+  Mínimo de 2 caracteres
+</mat-error>
+
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Nome pessoa 2</mat-label>
-      <input matInput required />
+      <input matInput formControlName="nome2" />
+
+      <mat-error *ngIf="hasError('nome2', 'required')">
+  Campo obrigatório
+</mat-error>
+
+<mat-error *ngIf="hasError('nome2', 'minlength')">
+  Mínimo de 2 caracteres
+</mat-error>
+
     </mat-form-field>
   </mat-card>
 
@@ -27,27 +49,81 @@
 
     <mat-form-field appearance="outline">
       <mat-label>Data especial</mat-label>
-      <input matInput [matDatepicker]="picker" />
+      <input
+        matInput
+        [matDatepicker]="picker"
+        formControlName="dataEspecial"
+      />
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
+
+      <mat-error *ngIf="f.dataEspecial.touched && f.dataEspecial.errors">
+        Data obrigatória
+      </mat-error>
     </mat-form-field>
 
-    <small>20 de janeiro de 2026</small>
+    <small *ngIf="form.value.dataEspecial">
+      {{ form.value.dataEspecial | date:'dd/MM/yyyy' }}
+    </small>
   </mat-card>
 
   <!-- Nossos Momentos -->
   <mat-card>
     <h3 class="center">Nossos Momentos</h3>
 
-    <div class="photos">
-      <div class="photo" *ngFor="let p of [1,2,3]">
-        <mat-icon>photo</mat-icon>
+    <input
+      type="file"
+      hidden
+      multiple
+      accept="image/*"
+      #fileInput
+      (change)="onSelecionarFotos($event)"
+    />
+
+    <div
+      class="photos"
+      cdkDropList
+      cdkDropListOrientation="horizontal"
+      cdkDropListAutoScroll
+      cdkDropListAutoScrollStep="20"
+      (cdkDropListDropped)="drop($event)"
+    >
+      <div
+        class="photo"
+        *ngFor="let foto of fotos; let i = index"
+        cdkDrag
+        cdkDragLockAxis="x"
+      >
+        <img [src]="foto.preview" />
+
+        <button
+          mat-icon-button
+          color="warn"
+          type="button"
+          (click)="removerFoto(i)"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
       </div>
     </div>
 
-    <button mat-stroked-button color="warn" class="full">
+    <button
+      mat-stroked-button
+      color="warn"
+      class="full"
+      type="button"
+      (click)="fileInput.click()"
+    >
       Selecionar fotos
     </button>
+
+    <small *ngIf="fotos.length">
+      Arraste as fotos para definir a ordem
+    </small>
+
+    <small class="error" *ngIf="!fotos.length && form.touched">
+      Adicione pelo menos uma foto
+    </small>
   </mat-card>
 
   <!-- Música -->
@@ -55,8 +131,16 @@
     <h3>Música</h3>
 
     <mat-form-field appearance="outline">
-      <mat-label>Link da música (Spotify)</mat-label>
-      <input matInput />
+      <mat-label>Link da música (Youtube)</mat-label>
+      <input matInput formControlName="musica" />
+
+<mat-error *ngIf="f.musica.hasError('required')">
+  Campo obrigatório
+</mat-error>
+
+<mat-error *ngIf="f.musica.hasError('youtubeInvalido')">
+  Informe um link válido do YouTube
+</mat-error>
     </mat-form-field>
   </mat-card>
 
@@ -66,7 +150,20 @@
 
     <mat-form-field appearance="outline">
       <mat-label>Mensagem especial</mat-label>
-      <textarea matInput rows="4"></textarea>
+      <textarea
+        matInput
+        rows="4"
+        formControlName="mensagem"
+      ></textarea>
+
+      <mat-error *ngIf="hasError('mensagem', 'required')">
+  Campo obrigatório
+</mat-error>
+
+<mat-error *ngIf="hasError('mensagem', 'minlength')">
+  Mínimo de 10 caracteres
+</mat-error>
+
     </mat-form-field>
   </mat-card>
 
@@ -75,10 +172,48 @@
     <h3>Plano</h3>
 
     <div class="plans">
-      <button mat-stroked-button color="primary">Para Sempre</button>
-      <button mat-stroked-button>Por 1 Ano</button>
-      <button mat-stroked-button>Por 1 Mês</button>
+      <button
+        mat-stroked-button
+        type="button"
+        [color]="form.value.plano === 'sempre' ? 'primary' : ''"
+        (click)="form.patchValue({ plano: 'sempre' })"
+      >
+        Para Sempre
+      </button>
+
+      <button
+        mat-stroked-button
+        type="button"
+        [color]="form.value.plano === 'ano' ? 'primary' : ''"
+        (click)="form.patchValue({ plano: 'ano' })"
+      >
+        Por 1 Ano
+      </button>
+
+      <button
+        mat-stroked-button
+        type="button"
+        [color]="form.value.plano === 'mes' ? 'primary' : ''"
+        (click)="form.patchValue({ plano: 'mes' })"
+      >
+        Por 1 Mês
+      </button>
     </div>
+
+    <mat-error *ngIf="f.plano.touched && f.plano.errors">
+      Escolha um plano
+    </mat-error>
   </mat-card>
 
-</div>
+  <!-- Submit -->
+  <button
+    mat-raised-button
+    color="primary"
+    class="full"
+    type="submit"
+    [disabled]="form.invalid || !fotos.length"
+  >
+    Continuar
+  </button>
+
+</form>
