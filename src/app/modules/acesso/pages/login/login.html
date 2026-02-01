@@ -1,84 +1,81 @@
 <div class="page">
 
-  <!-- Título -->
-  <div class="header">
-    <h2>Tempo Juntos</h2>
-    <p>São poucos passos para um presente único</p>
-  </div>
-
-  <!-- Vamos começar -->
   <mat-card>
-    <h3>Vamos começar</h3>
+    <h2 class="title">Entrar</h2>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Nome pessoa 1</mat-label>
-      <input matInput required />
-    </mat-form-field>
+    <form [formGroup]="loginForm" (ngSubmit)="submit()">
 
-    <mat-form-field appearance="outline">
-      <mat-label>Nome pessoa 2</mat-label>
-      <input matInput required />
-    </mat-form-field>
-  </mat-card>
+      <!-- Email -->
+      <mat-form-field appearance="outline">
+  <mat-label>Email</mat-label>
 
-  <!-- Nosso Dia -->
-  <mat-card class="center">
-    <h3>Nosso Dia</h3>
+  <mat-icon matPrefix>email</mat-icon>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Data especial</mat-label>
-      <input matInput [matDatepicker]="picker" />
-      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
-    </mat-form-field>
+  <input
+    matInput
+    type="email"
+    formControlName="email"
+  />
 
-    <small>20 de janeiro de 2026</small>
-  </mat-card>
+  <mat-error *ngIf="loginForm.get('email')?.hasError('required')">
+    Email é obrigatório
+  </mat-error>
 
-  <!-- Nossos Momentos -->
-  <mat-card>
-    <h3 class="center">Nossos Momentos</h3>
+  <mat-error *ngIf="loginForm.get('email')?.hasError('email')">
+    Email inválido
+  </mat-error>
+</mat-form-field>
 
-    <div class="photos">
-      <div class="photo" *ngFor="let p of [1,2,3]">
-        <mat-icon>photo</mat-icon>
-      </div>
-    </div>
 
-    <button mat-stroked-button color="warn" class="full">
-      Selecionar fotos
-    </button>
-  </mat-card>
+      <!-- Senha -->
+      <mat-form-field appearance="outline">
+  <mat-label>Senha</mat-label>
 
-  <!-- Música -->
-  <mat-card class="center">
-    <h3>Música</h3>
+  <input
+    matInput
+    [type]="hidePassword ? 'password' : 'text'"
+    formControlName="senha"
+  />
 
-    <mat-form-field appearance="outline">
-      <mat-label>Link da música (Spotify)</mat-label>
-      <input matInput />
-    </mat-form-field>
-  </mat-card>
+  <button
+    mat-icon-button
+    matSuffix
+    type="button"
+    (click)="togglePassword()"
+    aria-label="Mostrar ou esconder senha">
 
-  <!-- Mensagem -->
-  <mat-card>
-    <h3 class="center">O mais importante</h3>
+    <mat-icon>
+      {{ hidePassword ? 'visibility' : 'visibility_off' }}
+    </mat-icon>
+  </button>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Mensagem especial</mat-label>
-      <textarea matInput rows="4"></textarea>
-    </mat-form-field>
-  </mat-card>
+  <mat-error *ngIf="loginForm.get('senha')?.hasError('required')">
+    Senha é obrigatória
+  </mat-error>
+</mat-form-field>
 
-  <!-- Plano -->
-  <mat-card class="center">
-    <h3>Plano</h3>
 
-    <div class="plans">
-      <button mat-stroked-button color="primary">Para Sempre</button>
-      <button mat-stroked-button>Por 1 Ano</button>
-      <button mat-stroked-button>Por 1 Mês</button>
-    </div>
+      <!-- Lembrar senha -->
+      <mat-checkbox formControlName="lembrar">
+        Lembrar senha
+      </mat-checkbox>
+
+      <!-- Botão -->
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="loginForm.invalid"
+        class="full">
+        Entrar
+      </button>
+
+      <!-- Recuperar senha -->
+      <a class="forgot" routerLink="/recuperar-senha">
+        Esqueci minha senha
+      </a>
+
+    </form>
   </mat-card>
 
 </div>

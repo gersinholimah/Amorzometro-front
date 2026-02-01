@@ -1,0 +1,60 @@
+.page {
+  max-width: 420px;
+  margin: 40px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.header {
+  text-align: center;
+}
+
+mat-card {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.center {
+  text-align: center;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.photos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.photo {
+  border: 1px dashed #ccc;
+  border-radius: 8px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.full {
+  width: 100%;
+}
+
+.plans {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+mat-icon {
+  opacity: 0.7;
+}
+
+button[mat-icon-button] {
+  margin-right: -8px;
+}
