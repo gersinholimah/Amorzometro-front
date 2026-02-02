@@ -1,0 +1,56 @@
+<mat-card class="player" style="display: none;">
+  <div class="player-wrapper">
+    <div id="yt-player"></div>
+
+    <div class="placeholder" *ngIf="!tocando">
+      <mat-icon>play_circle</mat-icon>
+      <span>Escolha uma música</span>
+    </div>
+  </div>
+</mat-card>
+
+<mat-card class="playlist">
+  <mat-list>
+<mat-list-item
+  *ngFor="let video of sugestoes"
+  class="playlist-item"
+  [class.active]="tocando === video.videoId"
+  [class.hidden]="confirmado && confirmado !== video.videoId"
+  (click)="onItemClick(video.videoId)"
+>
+
+
+  <!-- THUMB → PLAY / PAUSE -->
+  <div
+    class="thumb-wrapper"
+    (click)="togglePlay(video.videoId); $event.stopPropagation()"
+  >
+    <img
+      class="thumb"
+      [src]="'https://img.youtube.com/vi/' + video.videoId + '/mqdefault.jpg'"
+      alt="Thumbnail"
+    />
+
+    <mat-icon class="play-overlay">
+      {{ tocando === video.videoId ? 'pause' : 'play_arrow' }}
+    </mat-icon>
+  </div>
+
+  <!-- INFO -->
+  <div class="info">
+    <div class="titulo">{{ video.titulo }}</div>
+    <div class="duracao">{{ video.duracao }}</div>
+  </div>
+
+  <!-- CHECK -->
+<mat-icon
+  class="check"
+  (click)="confirmar(video.videoId); $event.stopPropagation()"
+>
+  {{ confirmado === video.videoId ? 'close' : 'check' }}
+</mat-icon>
+
+</mat-list-item>
+
+  </mat-list>
+</mat-card>
