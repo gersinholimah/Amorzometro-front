@@ -16,6 +16,8 @@ import { youtubeUrlValidator } from '../../../../shared/validators/youtube-url.v
 
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms';
 
+import { ListaVideoYoutubeComponent } from '../../../../shared/components/lista-video-youtube/lista-video-youtube';
+import { IYoutubeSugestao } from '../../../../shared/interfaces/estrutura.interface';
 
 
 interface FotoUpload {
@@ -38,6 +40,7 @@ interface FotoUpload {
   MatInputModule,
   MatDatepickerModule,
   MatNativeDateModule,
+  ListaVideoYoutubeComponent,
 ],
   templateUrl: './criar-pagina.html',
   styleUrl: './criar-pagina.css',
@@ -53,6 +56,24 @@ form!: FormGroup<{
   mensagem: FormControl<string>;
   plano: FormControl<string>;
 }>;
+
+ musicasSugeridas: IYoutubeSugestao[] = [
+    {
+      videoId: 'i9UDD6zyCGs',
+      titulo: 'New West – Those Eyes',
+      duracao: '03:40'
+    },
+    {
+      videoId: 'NdYWuo9OFAw',
+      titulo: 'Goo Goo Dolls – Iris',
+      duracao: '03:36'
+    },
+    {
+      videoId: '3JWTaaS7LdU',
+      titulo: 'Whitney Houston – I Will Always Love You',
+      duracao: '04:31'
+    }
+  ];
   constructor(private fb: FormBuilder) {}
 
 ngOnInit() {
@@ -86,6 +107,8 @@ musica: this.fb.control('', {
   get f() {
     return this.form.controls;
   }
+
+
 hasError(controlName: keyof typeof this.form.controls, error: string) {
   const control = this.form.get(controlName);
   return !!(control && control.touched && control.errors?.[error]);
@@ -154,5 +177,8 @@ montarFormData(): FormData {
     // this.http.post('/api/rascunho', formData).subscribe();
   }
 
-
+onMusicaInput(event: Event) {
+  const value = (event.target as HTMLInputElement).value;
+  this.form.get('musica')?.setValue(value);
+}
 }

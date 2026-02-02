@@ -126,23 +126,24 @@
     </small>
   </mat-card>
 
-  <!-- Música -->
-  <mat-card class="center">
+
+<!-- Música -->
+<mat-card>
     <h3>Música</h3>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Link da música (Youtube)</mat-label>
-      <input matInput formControlName="musica" />
-
-<mat-error *ngIf="f.musica.hasError('required')">
-  Campo obrigatório
-</mat-error>
-
-<mat-error *ngIf="f.musica.hasError('youtubeInvalido')">
-  Informe um link válido do YouTube
-</mat-error>
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Link do YouTube</mat-label>
+      <input matInput formControlName="musica">
     </mat-form-field>
+
+    <app-lista-video-youtube
+      formControlName="musica"
+      [sugestoes]="musicasSugeridas">
+    </app-lista-video-youtube>
+
   </mat-card>
+
+
 
   <!-- Mensagem -->
   <mat-card>

@@ -16,3 +16,10 @@ export interface IDadosDaSessao {
   cpf: string;
   ultimaInteracao: string;
 }
+
+
+export interface IYoutubeSugestao {
+  videoId: string;
+  titulo: string;
+  duracao: string;
+}
