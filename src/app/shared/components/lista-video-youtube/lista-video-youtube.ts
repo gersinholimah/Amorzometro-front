@@ -76,6 +76,11 @@ export class ListaVideoYoutubeComponent
     );
 
     this.selecionado = match ? match[1] : undefined;
+
+    if (this.sugestoes.length === 1) {
+  this.confirmado = this.sugestoes[0].videoId;
+}
+
   }
 
   registerOnChange(fn: any): void {
@@ -174,6 +179,32 @@ togglePlay(videoId: string): void {
     this.player.loadVideoById(videoId);
   }
 }
+
+confirmar(videoId: string): void {
+  // 🔥 SE JÁ ESTÁ CONFIRMADO → REMOVE
+  if (this.confirmado === videoId) {
+    this.confirmado = undefined;
+    this.selecionado = undefined;
+    this.tocando = undefined;
+
+    this.player?.stopVideo();
+
+    // limpa o formControl
+    this.onChange(null);
+    this.onTouched();
+    return;
+  }
+
+  // ✅ fluxo normal de confirmação
+  this.confirmado = videoId;
+  this.selecionado = videoId;
+
+  const url = `https://www.youtube.com/watch?v=${videoId}`;
+  this.onChange(url);
+  this.onTouched();
+}
+
+/*
 confirmar(videoId: string): void {
   // se clicar no mesmo → desfaz confirmação
   if (this.confirmado === videoId) {
@@ -189,5 +220,5 @@ confirmar(videoId: string): void {
   this.onChange(url);
   this.onTouched();
 }
-
+*/
 }

@@ -18,6 +18,7 @@ import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, FormControl } 
 
 import { ListaVideoYoutubeComponent } from '../../../../shared/components/lista-video-youtube/lista-video-youtube';
 import { IYoutubeSugestao } from '../../../../shared/interfaces/estrutura.interface';
+import { YoutubeService } from '../../@suport/services/youtube.service';
 
 
 interface FotoUpload {
@@ -48,6 +49,9 @@ interface FotoUpload {
 export class CriarPagina {
 
   fotos: FotoUpload[] = [];
+
+  musicaPreview?: IYoutubeSugestao;
+videoManual?: IYoutubeSugestao;
 form!: FormGroup<{
   nome1: FormControl<string>;
   nome2: FormControl<string>;
@@ -74,7 +78,8 @@ form!: FormGroup<{
       duracao: '04:31'
     }
   ];
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder,  private youtubeService: YoutubeService
+) {}
 
 ngOnInit() {
   this.form = this.fb.group({
@@ -102,6 +107,33 @@ musica: this.fb.control('', {
       validators: Validators.required
     }),
   });
+
+
+  this.form.get('musica')!.valueChanges.subscribe(url => {
+  if (!url) {
+    this.musicaPreview = undefined;
+    this.videoManual = undefined;
+    return;
+  }
+
+  const match = url.match(
+    /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^\&\?\/]+)/
+  );
+
+  if (!match) {
+    this.musicaPreview = undefined;
+    return;
+  }
+
+  const videoId = match[1];
+
+  this.youtubeService.getVideoInfo(videoId)
+    .subscribe(video => {
+      this.musicaPreview = video ?? undefined;
+    });
+});
+
+
 }
 
   get f() {
@@ -181,4 +213,18 @@ onMusicaInput(event: Event) {
   const value = (event.target as HTMLInputElement).value;
   this.form.get('musica')?.setValue(value);
 }
+
+
+
+confirmarMusica() {
+  if (!this.musicaPreview) return;
+
+  this.videoManual = this.musicaPreview;
+  this.musicaPreview = undefined;
+}
+trocarMusica() {
+  this.videoManual = undefined;
+  this.form.get('musica')?.reset('');
+}
+
 }
