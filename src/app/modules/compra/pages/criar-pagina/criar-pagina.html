@@ -18,28 +18,26 @@
       <mat-label>Nome pessoa 1</mat-label>
       <input matInput formControlName="nome1" />
 
-<mat-error *ngIf="hasError('nome1', 'required')">
-  Campo obrigatório
-</mat-error>
+      <mat-error *ngIf="hasError('nome1','required')">
+        Campo obrigatório
+      </mat-error>
 
-<mat-error *ngIf="hasError('nome1', 'minlength')">
-  Mínimo de 2 caracteres
-</mat-error>
-
+      <mat-error *ngIf="hasError('nome1','minlength')">
+        Mínimo de 2 caracteres
+      </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Nome pessoa 2</mat-label>
       <input matInput formControlName="nome2" />
 
-      <mat-error *ngIf="hasError('nome2', 'required')">
-  Campo obrigatório
-</mat-error>
+      <mat-error *ngIf="hasError('nome2','required')">
+        Campo obrigatório
+      </mat-error>
 
-<mat-error *ngIf="hasError('nome2', 'minlength')">
-  Mínimo de 2 caracteres
-</mat-error>
-
+      <mat-error *ngIf="hasError('nome2','minlength')">
+        Mínimo de 2 caracteres
+      </mat-error>
     </mat-form-field>
   </mat-card>
 
@@ -84,15 +82,12 @@
       class="photos"
       cdkDropList
       cdkDropListOrientation="horizontal"
-      cdkDropListAutoScroll
-      cdkDropListAutoScrollStep="20"
       (cdkDropListDropped)="drop($event)"
     >
       <div
         class="photo"
         *ngFor="let foto of fotos; let i = index"
         cdkDrag
-        cdkDragLockAxis="x"
       >
         <img [src]="foto.preview" />
 
@@ -126,74 +121,53 @@
     </small>
   </mat-card>
 
-
-<!-- Música -->
-<mat-card>
+  <!-- Música -->
+  <mat-card>
     <h3>Música</h3>
 
+    <mat-form-field appearance="outline" class="full" *ngIf="!videoManual">
+      <mat-label>Link do YouTube</mat-label>
+      <input matInput formControlName="musica" />
 
-<mat-form-field appearance="outline" class="full" *ngIf="!videoManual">
-  <mat-label>Link do YouTube</mat-label>
+      <button
+        mat-icon-button
+        matSuffix
+        color="primary"
+        *ngIf="musicaPreview"
+        type="button"
+        (click)="confirmarMusica()"
+      >
+        <mat-icon>check</mat-icon>
+      </button>
+    </mat-form-field>
 
-  <input matInput formControlName="musica">
+    <app-lista-video-youtube
+      [sugestoes]="videoManual ? [videoManual] : musicasSugeridas"
+      formControlName="musica">
+    </app-lista-video-youtube>
 
-  <button
-    mat-icon-button
-    matSuffix
-    color="primary"
-    *ngIf="musicaPreview"
-    type="button"
-    (click)="confirmarMusica()"
-  >
-    <mat-icon>check</mat-icon>
-  </button>
-</mat-form-field>
+    <button
+      *ngIf="musicaPreview && !videoManual"
+      mat-raised-button
+      color="primary"
+      class="full"
+      type="button"
+      (click)="confirmarMusica()"
+    >
+      Confirmar música
+    </button>
 
-
-
-<app-lista-video-youtube
-  [sugestoes]="videoManual ? [videoManual] : musicasSugeridas"
-  formControlName="musica">
-</app-lista-video-youtube>
-
-
-<button
-  *ngIf="musicaPreview && !videoManual"
-  mat-raised-button
-  color="primary"
-  class="full"
-  type="button"
-  (click)="confirmarMusica()"
->
-  Confirmar música
-</button>
-
-
-<button
-  *ngIf="videoManual"
-  mat-stroked-button
-  color="warn"
-  class="full"
-  type="button"
-  (click)="trocarMusica()"
->
-  Trocar música
-</button>
-
-
-
-
-
-
-
-
-
-
-
-
+    <button
+      *ngIf="videoManual"
+      mat-stroked-button
+      color="warn"
+      class="full"
+      type="button"
+      (click)="trocarMusica()"
+    >
+      Trocar música
+    </button>
   </mat-card>
-
-
 
   <!-- Mensagem -->
   <mat-card>
@@ -201,20 +175,15 @@
 
     <mat-form-field appearance="outline">
       <mat-label>Mensagem especial</mat-label>
-      <textarea
-        matInput
-        rows="4"
-        formControlName="mensagem"
-      ></textarea>
+      <textarea matInput rows="4" formControlName="mensagem"></textarea>
 
-      <mat-error *ngIf="hasError('mensagem', 'required')">
-  Campo obrigatório
-</mat-error>
+      <mat-error *ngIf="hasError('mensagem','required')">
+        Campo obrigatório
+      </mat-error>
 
-<mat-error *ngIf="hasError('mensagem', 'minlength')">
-  Mínimo de 10 caracteres
-</mat-error>
-
+      <mat-error *ngIf="hasError('mensagem','minlength')">
+        Mínimo de 10 caracteres
+      </mat-error>
     </mat-form-field>
   </mat-card>
 
@@ -223,30 +192,21 @@
     <h3>Plano</h3>
 
     <div class="plans">
-      <button
-        mat-stroked-button
-        type="button"
+      <button mat-stroked-button type="button"
         [color]="form.value.plano === 'sempre' ? 'primary' : ''"
-        (click)="form.patchValue({ plano: 'sempre' })"
-      >
+        (click)="form.patchValue({ plano: 'sempre' })">
         Para Sempre
       </button>
 
-      <button
-        mat-stroked-button
-        type="button"
+      <button mat-stroked-button type="button"
         [color]="form.value.plano === 'ano' ? 'primary' : ''"
-        (click)="form.patchValue({ plano: 'ano' })"
-      >
+        (click)="form.patchValue({ plano: 'ano' })">
         Por 1 Ano
       </button>
 
-      <button
-        mat-stroked-button
-        type="button"
+      <button mat-stroked-button type="button"
         [color]="form.value.plano === 'mes' ? 'primary' : ''"
-        (click)="form.patchValue({ plano: 'mes' })"
-      >
+        (click)="form.patchValue({ plano: 'mes' })">
         Por 1 Mês
       </button>
     </div>
@@ -254,6 +214,88 @@
     <mat-error *ngIf="f.plano.touched && f.plano.errors">
       Escolha um plano
     </mat-error>
+  </mat-card>
+
+  <!-- Contato -->
+  <mat-card>
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Email</mat-label>
+      <mat-icon matPrefix>email</mat-icon>
+      <input matInput type="email" formControlName="email" />
+
+      <mat-error *ngIf="hasError('email','required')">
+        Email é obrigatório
+      </mat-error>
+
+      <mat-error *ngIf="hasError('email','email')">
+        Email inválido
+      </mat-error>
+    </mat-form-field>
+
+    <div style="display: flex; gap: 8px;">
+      <!-- DDI -->
+      <mat-form-field appearance="outline" style="width:160px;">
+        <mat-label>DDI</mat-label>
+
+        <mat-select formControlName="ddi">
+          <mat-select-trigger>
+  <span class="fi fi-{{ paisSelecionado?.bandeira }}" style="margin-right:8px"></span>
+  {{ form.value.ddi }}
+</mat-select-trigger>
+
+
+          <mat-option *ngFor="let pais of paisesDDI" [value]="pais.codigo">
+  <span class="fi fi-{{ pais.bandeira }}" style="margin-right:8px"></span>
+  {{ pais.codigo }} — {{ pais.nome }}
+</mat-option>
+        </mat-select>
+
+      </mat-form-field>
+
+      <!-- Telefone -->
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Telefone</mat-label>
+        <mat-icon matPrefix>phone</mat-icon>
+        <input matInput type="tel" formControlName="telefone" />
+
+        <mat-error *ngIf="hasError('telefone','required')">
+          Telefone é obrigatório
+        </mat-error>
+
+        <mat-error *ngIf="hasError('telefone','pattern')">
+          Número inválido
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Senha</mat-label>
+      <mat-icon matPrefix>lock</mat-icon>
+
+      <input
+        matInput
+        [type]="esconderSenha ? 'password' : 'text'"
+        formControlName="senha"
+      />
+
+      <button
+        mat-icon-button
+        matSuffix
+        type="button"
+        (click)="esconderSenha = !esconderSenha">
+        <mat-icon>
+          {{ esconderSenha ? 'visibility_off' : 'visibility' }}
+        </mat-icon>
+      </button>
+
+      <mat-error *ngIf="hasError('senha','required')">
+        Senha é obrigatória
+      </mat-error>
+
+      <mat-error *ngIf="hasError('senha','minlength')">
+        Mínimo de 6 caracteres
+      </mat-error>
+    </mat-form-field>
   </mat-card>
 
   <!-- Submit -->
