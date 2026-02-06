@@ -1,0 +1,15 @@
+<mat-form-field appearance="outline" style="width: 100%;">
+  <mat-label>DDI</mat-label>
+
+  <mat-select [value]="value" (selectionChange)="onSelectionChange($event)" [disabled]="isDisabled">
+    <mat-select-trigger>
+      <span class="fi fi-{{ paisSelecionado?.bandeira }}" style="margin-right:8px"></span>
+      {{ value }}
+    </mat-select-trigger>
+
+    <mat-option *ngFor="let pais of paisesDDI" [value]="pais.codigo">
+      <span class="fi fi-{{ pais.bandeira }}" style="margin-right:8px"></span>
+      {{ pais.codigo }} — {{ pais.nome }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>

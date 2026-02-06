@@ -166,7 +166,7 @@ togglePlay(videoId: string): void {
   this.tocando = videoId;
 
   if (!this.player) {
-    this.player = new YT.Player('yt-player', {
+    this.player = new window.YT.Player('yt-player', {
       videoId,
       playerVars: {
         autoplay: 1,

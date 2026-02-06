@@ -234,23 +234,7 @@
 
     <div style="display: flex; gap: 8px;">
       <!-- DDI -->
-      <mat-form-field appearance="outline" style="width:160px;">
-        <mat-label>DDI</mat-label>
-
-        <mat-select formControlName="ddi">
-          <mat-select-trigger>
-  <span class="fi fi-{{ paisSelecionado?.bandeira }}" style="margin-right:8px"></span>
-  {{ form.value.ddi }}
-</mat-select-trigger>
-
-
-          <mat-option *ngFor="let pais of paisesDDI" [value]="pais.codigo">
-  <span class="fi fi-{{ pais.bandeira }}" style="margin-right:8px"></span>
-  {{ pais.codigo }} — {{ pais.nome }}
-</mat-option>
-        </mat-select>
-
-      </mat-form-field>
+      <app-select-codigo-pais formControlName="ddi" style="width:160px;"></app-select-codigo-pais>
 
       <!-- Telefone -->
       <mat-form-field appearance="outline" class="full">

@@ -17,10 +17,9 @@ import { youtubeUrlValidator } from '../../../../shared/validators/youtube-url.v
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms';
 
 import { ListaVideoYoutubeComponent } from '../../../../shared/components/lista-video-youtube/lista-video-youtube';
-import { IYoutubeSugestao, PaisDDI } from '../../../../shared/interfaces/estrutura.interface';
+import { IYoutubeSugestao } from '../../../../shared/interfaces/estrutura.interface';
 import { YoutubeService } from '../../@suport/services/youtube.service';
-import { MatSelectModule } from '@angular/material/select';
-import { PAISES_DDI } from '../../../../shared/constants/paises.constant';
+import { SelectCodigoPaisComponent } from '../../../../shared/components/select-codigo-pais/select-codigo-pais.component';
 
 
 interface FotoUpload {
@@ -44,13 +43,12 @@ interface FotoUpload {
   MatDatepickerModule,
   MatNativeDateModule,
   ListaVideoYoutubeComponent,
-  MatSelectModule
+  SelectCodigoPaisComponent
 ],
   templateUrl: './criar-pagina.html',
   styleUrl: './criar-pagina.css',
 })
 export class CriarPagina {
-paisesDDI: PaisDDI[] = PAISES_DDI;
 
   fotos: FotoUpload[] = [];
 esconderSenha = true;
@@ -171,9 +169,6 @@ ngOnInit() {
   get f() {
     return this.form.controls;
   }
-get paisSelecionado(): PaisDDI | undefined {
-  return this.paisesDDI.find(p => p.codigo === this.form.value.ddi);
-}
 
 
 hasError(controlName: keyof typeof this.form.controls, error: string) {
