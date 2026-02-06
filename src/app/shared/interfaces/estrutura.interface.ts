@@ -23,3 +23,9 @@ export interface IYoutubeSugestao {
   titulo: string;
   duracao: string;
 }
+
+export interface PaisDDI {
+  nome: string;
+  codigo: string;
+  bandeira: string;
+}

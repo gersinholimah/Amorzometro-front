@@ -17,8 +17,10 @@ import { youtubeUrlValidator } from '../../../../shared/validators/youtube-url.v
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms';
 
 import { ListaVideoYoutubeComponent } from '../../../../shared/components/lista-video-youtube/lista-video-youtube';
-import { IYoutubeSugestao } from '../../../../shared/interfaces/estrutura.interface';
+import { IYoutubeSugestao, PaisDDI } from '../../../../shared/interfaces/estrutura.interface';
 import { YoutubeService } from '../../@suport/services/youtube.service';
+import { MatSelectModule } from '@angular/material/select';
+import { PAISES_DDI } from '../../../../shared/constants/paises.constant';
 
 
 interface FotoUpload {
@@ -42,13 +44,16 @@ interface FotoUpload {
   MatDatepickerModule,
   MatNativeDateModule,
   ListaVideoYoutubeComponent,
+  MatSelectModule
 ],
   templateUrl: './criar-pagina.html',
   styleUrl: './criar-pagina.css',
 })
 export class CriarPagina {
+paisesDDI: PaisDDI[] = PAISES_DDI;
 
   fotos: FotoUpload[] = [];
+esconderSenha = true;
 
   musicaPreview?: IYoutubeSugestao;
 videoManual?: IYoutubeSugestao;
@@ -59,6 +64,10 @@ form!: FormGroup<{
   musica: FormControl<string>;
   mensagem: FormControl<string>;
   plano: FormControl<string>;
+  email: FormControl<string>;
+  senha: FormControl<string>;
+  ddi: FormControl<string>;
+  telefone: FormControl<string>;
 }>;
 
  musicasSugeridas: IYoutubeSugestao[] = [
@@ -83,30 +92,53 @@ form!: FormGroup<{
 
 ngOnInit() {
   this.form = this.fb.group({
-    nome1: this.fb.control('', {
-      nonNullable: true,
-      validators: [Validators.required, Validators.minLength(2)]
-    }),
-    nome2: this.fb.control('', {
-      nonNullable: true,
-      validators: [Validators.required, Validators.minLength(2)]
-    }),
-    dataEspecial: this.fb.control<Date | null>(null, {
-      validators: Validators.required
-    }),
-musica: this.fb.control('', {
-  nonNullable: true,
-  validators: [Validators.required, youtubeUrlValidator]
-}),
-    mensagem: this.fb.control('', {
-      nonNullable: true,
-      validators: [Validators.required, Validators.minLength(10)]
-    }),
-    plano: this.fb.control('', {
-      nonNullable: true,
-      validators: Validators.required
-    }),
-  });
+  nome1: this.fb.control('', {
+    nonNullable: true,
+    validators: [Validators.required, Validators.minLength(2)]
+  }),
+  nome2: this.fb.control('', {
+    nonNullable: true,
+    validators: [Validators.required, Validators.minLength(2)]
+  }),
+  dataEspecial: this.fb.control<Date | null>(null, {
+    validators: Validators.required
+  }),
+  musica: this.fb.control('', {
+    nonNullable: true,
+    validators: [Validators.required, youtubeUrlValidator]
+  }),
+  mensagem: this.fb.control('', {
+    nonNullable: true,
+    validators: [Validators.required, Validators.minLength(10)]
+  }),
+  plano: this.fb.control('', {
+    nonNullable: true,
+    validators: Validators.required
+  }),
+
+  email: this.fb.control('', {
+    nonNullable: true,
+    validators: [Validators.required, Validators.email]
+  }),
+
+  senha: this.fb.control('', {
+    nonNullable: true,
+    validators: [Validators.required, Validators.minLength(6)]
+  }),
+
+  ddi: this.fb.control('+55', {
+    nonNullable: true,
+    validators: Validators.required
+  }),
+
+  telefone: this.fb.control('', {
+    nonNullable: true,
+    validators: [
+      Validators.required,
+      Validators.pattern(/^[0-9]{8,15}$/)
+    ]
+  })
+});
 
 
   this.form.get('musica')!.valueChanges.subscribe(url => {
@@ -139,6 +171,9 @@ musica: this.fb.control('', {
   get f() {
     return this.form.controls;
   }
+get paisSelecionado(): PaisDDI | undefined {
+  return this.paisesDDI.find(p => p.codigo === this.form.value.ddi);
+}
 
 
 hasError(controlName: keyof typeof this.form.controls, error: string) {
