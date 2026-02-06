@@ -35,6 +35,13 @@ export const CLIENTE_ROUTES: Routes = [
         (m) => m.Perfil
       ),
   },
+  {
+    path: PATH_CLIENTE.MINHAS_COMPRAS,
+    loadComponent: () =>
+      import('./pages/minhas-compras/minhas-compras').then(
+        (m) => m.MinhasCompras
+      ),
+  },
 
   {
     path: '**',

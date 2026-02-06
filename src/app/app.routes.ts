@@ -30,6 +30,11 @@ export const routes: Routes = [
           import('./modules/compra/compra.routes').then(m => m.COMPRA_ROUTES),
 
   },
+  {
+    path: PATH_MODULO.COMPLIANCE,
+    loadChildren: () =>
+      import('./modules/compliance/compliance.routes').then(m => m.COMPLIANCE_ROUTES),
+  },
 
   {
     path: PATH_MODULO.ACESSO,
@@ -65,7 +70,6 @@ export const routes: Routes = [
   },/**/
 
   { path: '**', redirectTo: '' }
-    // { path: '**', redirectTo: PATH_MODULO.ACESSO },
 
 
 ];
