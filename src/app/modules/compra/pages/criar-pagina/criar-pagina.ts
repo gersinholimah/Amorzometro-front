@@ -14,7 +14,7 @@ import { GlobalService } from '../../../../shared/service/global.service';
 
 import { youtubeUrlValidator } from '../../../../shared/validators/youtube-url.validator';
 
-import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, FormControl, FormsModule } from '@angular/forms';
 
 import { ListaVideoYoutubeComponent } from '../../../../shared/components/lista-video-youtube/lista-video-youtube';
 import { IYoutubeSugestao } from '../../../../shared/interfaces/estrutura.interface';
@@ -35,6 +35,7 @@ interface FotoUpload {
   imports: [
   CommonModule,
   ReactiveFormsModule,
+  FormsModule,
   DragDropModule,
   MatCardModule,
   MatButtonModule,
@@ -56,6 +57,7 @@ export class CriarPagina {
   esconderSenha = true;
   shakeInput = false;
 
+  musicaSelecionada: string | null = null;
   musicaPreview?: IYoutubeSugestao;
   videoManual?: IYoutubeSugestao;
   form!: FormGroup<{
@@ -259,6 +261,18 @@ onMusicaInput(event: Event) {
   this.form.get('musica')?.setValue(value);
 }
 
+onVideoSelecionado(url: string | null) {
+  if (url) {
+    this.musicaSelecionada = url;
+    this.form.get('musica')?.setValue('');
+  } else {
+    this.musicaSelecionada = null;
+    this.videoManual = undefined;
+    // se desejar limpar o input, descomente abaixo
+    // this.form.get('musica')?.setValue('');
+  }
+}
+
 confirmarLinkExterno() {
   const musicaControl = this.form.get('musica');
   if (!musicaControl?.value) {
@@ -270,6 +284,9 @@ confirmarLinkExterno() {
 
   if (this.musicaPreview) {
       this.videoManual = this.musicaPreview;
+      // confirma usando URL do youtube
+      const url = `https://www.youtube.com/watch?v=${this.musicaPreview.videoId}`;
+      this.onVideoSelecionado(url);
       this.musicaPreview = undefined;
   }
 }

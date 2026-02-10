@@ -222,6 +222,7 @@ confirmar(videoId: string): void {
 
   // ✅ fluxo normal de confirmação
   this.player?.stopVideo();
+  this.tocando = undefined; // <--- Icon resets to play
   this.confirmado = videoId;
   this.selecionado = videoId;
 
