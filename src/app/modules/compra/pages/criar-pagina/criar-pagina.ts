@@ -146,10 +146,9 @@ ngOnInit() {
 
 
   this.form.get('musica')!.valueChanges.subscribe(url => {
-  this.videoManual = undefined;
-
   if (!url) {
     this.musicaPreview = undefined;
+    this.videoManual = undefined;
     return;
   }
 
@@ -159,10 +158,19 @@ ngOnInit() {
 
   if (!match) {
     this.musicaPreview = undefined;
+    this.videoManual = undefined;
     return;
   }
 
   const videoId = match[1];
+
+  // Se já temos um videoManual e o ID é o mesmo, não faz nada
+  if (this.videoManual && this.videoManual.videoId === videoId) {
+    return;
+  }
+
+  // Se o ID mudou, resetamos o manual
+  this.videoManual = undefined;
 
   this.youtubeService.getVideoInfo(videoId)
     .subscribe(video => {
