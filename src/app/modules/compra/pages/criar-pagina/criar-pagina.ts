@@ -150,7 +150,9 @@ ngOnInit() {
   this.form.get('musica')!.valueChanges.subscribe(url => {
   if (!url) {
     this.musicaPreview = undefined;
-    this.videoManual = undefined;
+    if (!this.musicaSelecionada) {
+      this.videoManual = undefined;
+    }
     return;
   }
 
@@ -160,7 +162,9 @@ ngOnInit() {
 
   if (!match) {
     this.musicaPreview = undefined;
-    this.videoManual = undefined;
+    if (!this.musicaSelecionada) {
+      this.videoManual = undefined;
+    }
     return;
   }
 
