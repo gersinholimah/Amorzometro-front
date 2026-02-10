@@ -165,10 +165,6 @@ export class ListaVideoYoutubeComponent
   onItemClick(videoId: string): void {
   // sempre seleciona
   this.selecionado = videoId;
-
-  const url = `https://www.youtube.com/watch?v=${videoId}`;
-  this.onChange(url);
-  this.onTouched();
 }
 
 togglePlay(videoId: string): void {
@@ -183,11 +179,6 @@ togglePlay(videoId: string): void {
 
   // novo vídeo → seleciona + toca
   this.selecionado = videoId;
-
-  const url = `https://www.youtube.com/watch?v=${videoId}`;
-  this.onChange(url);
-  this.onTouched();
-
   this.tocando = videoId;
 
   if (!this.player) {
