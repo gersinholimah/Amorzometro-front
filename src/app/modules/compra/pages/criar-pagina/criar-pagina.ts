@@ -14,12 +14,13 @@ import { GlobalService } from '../../../../shared/service/global.service';
 
 import { youtubeUrlValidator } from '../../../../shared/validators/youtube-url.validator';
 
-import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, FormControl, FormsModule } from '@angular/forms';
 
 import { ListaVideoYoutubeComponent } from '../../../../shared/components/lista-video-youtube/lista-video-youtube';
 import { IYoutubeSugestao } from '../../../../shared/interfaces/estrutura.interface';
 import { YoutubeService } from '../../@suport/services/youtube.service';
 import { SelectCodigoPaisComponent } from '../../../../shared/components/select-codigo-pais/select-codigo-pais.component';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 
 interface FotoUpload {
@@ -34,6 +35,7 @@ interface FotoUpload {
   imports: [
   CommonModule,
   ReactiveFormsModule,
+  FormsModule,
   DragDropModule,
   MatCardModule,
   MatButtonModule,
@@ -43,7 +45,8 @@ interface FotoUpload {
   MatDatepickerModule,
   MatNativeDateModule,
   ListaVideoYoutubeComponent,
-  SelectCodigoPaisComponent
+  SelectCodigoPaisComponent,
+  MatSnackBarModule
 ],
   templateUrl: './criar-pagina.html',
   styleUrl: './criar-pagina.css',
@@ -51,22 +54,24 @@ interface FotoUpload {
 export class CriarPagina {
 
   fotos: FotoUpload[] = [];
-esconderSenha = true;
+  esconderSenha = true;
+  shakeInput = false;
 
+  musicaSelecionada: string | null = null;
   musicaPreview?: IYoutubeSugestao;
-videoManual?: IYoutubeSugestao;
-form!: FormGroup<{
-  nome1: FormControl<string>;
-  nome2: FormControl<string>;
-  dataEspecial: FormControl<Date | null>;
-  musica: FormControl<string>;
-  mensagem: FormControl<string>;
-  plano: FormControl<string>;
-  email: FormControl<string>;
-  senha: FormControl<string>;
-  ddi: FormControl<string>;
-  telefone: FormControl<string>;
-}>;
+  videoManual?: IYoutubeSugestao;
+  form!: FormGroup<{
+    nome1: FormControl<string>;
+    nome2: FormControl<string>;
+    dataEspecial: FormControl<Date | null>;
+    musica: FormControl<string>;
+    mensagem: FormControl<string>;
+    plano: FormControl<string>;
+    email: FormControl<string>;
+    senha: FormControl<string>;
+    ddi: FormControl<string>;
+    telefone: FormControl<string>;
+  }>;
 
  musicasSugeridas: IYoutubeSugestao[] = [
     {
@@ -85,7 +90,10 @@ form!: FormGroup<{
       duracao: '04:31'
     }
   ];
-  constructor(private fb: FormBuilder,  private youtubeService: YoutubeService
+  constructor(
+    private fb: FormBuilder,
+    private youtubeService: YoutubeService,
+    private snackBar: MatSnackBar
 ) {}
 
 ngOnInit() {
@@ -142,7 +150,9 @@ ngOnInit() {
   this.form.get('musica')!.valueChanges.subscribe(url => {
   if (!url) {
     this.musicaPreview = undefined;
-    this.videoManual = undefined;
+    if (!this.musicaSelecionada) {
+      this.videoManual = undefined;
+    }
     return;
   }
 
@@ -152,10 +162,21 @@ ngOnInit() {
 
   if (!match) {
     this.musicaPreview = undefined;
+    if (!this.musicaSelecionada) {
+      this.videoManual = undefined;
+    }
     return;
   }
 
   const videoId = match[1];
+
+  // Se já temos um videoManual e o ID é o mesmo, não faz nada
+  if (this.videoManual && this.videoManual.videoId === videoId) {
+    return;
+  }
+
+  // Se o ID mudou, resetamos o manual
+  this.videoManual = undefined;
 
   this.youtubeService.getVideoInfo(videoId)
     .subscribe(video => {
@@ -244,17 +265,34 @@ onMusicaInput(event: Event) {
   this.form.get('musica')?.setValue(value);
 }
 
-
-
-confirmarMusica() {
-  if (!this.musicaPreview) return;
-
-  this.videoManual = this.musicaPreview;
-  this.musicaPreview = undefined;
+onVideoSelecionado(url: string | null) {
+  if (url) {
+    this.musicaSelecionada = url;
+    this.form.get('musica')?.setValue('');
+  } else {
+    this.musicaSelecionada = null;
+    this.videoManual = undefined;
+    // se desejar limpar o input, descomente abaixo
+    // this.form.get('musica')?.setValue('');
+  }
 }
-trocarMusica() {
-  this.videoManual = undefined;
-  this.form.get('musica')?.reset('');
+
+confirmarLinkExterno() {
+  const musicaControl = this.form.get('musica');
+  if (!musicaControl?.value) {
+      this.snackBar.open('Informe o link do YouTube para continuar', 'OK', { duration: 3000 });
+      this.shakeInput = true;
+      setTimeout(() => this.shakeInput = false, 300);
+      return;
+  }
+
+  if (this.musicaPreview) {
+      this.videoManual = this.musicaPreview;
+      // confirma usando URL do youtube
+      const url = `https://www.youtube.com/watch?v=${this.musicaPreview.videoId}`;
+      this.onVideoSelecionado(url);
+      this.musicaPreview = undefined;
+  }
 }
 
 }

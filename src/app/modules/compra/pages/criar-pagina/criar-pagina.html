@@ -125,48 +125,28 @@
   <mat-card>
     <h3>Música</h3>
 
-    <mat-form-field appearance="outline" class="full" *ngIf="!videoManual">
-      <mat-label>Link do YouTube</mat-label>
-      <input matInput formControlName="musica" />
+    <div style="display: flex; gap: 8px; align-items: center;" *ngIf="!musicaSelecionada">
+      <mat-form-field appearance="outline" class="full" [class.shake]="shakeInput">
+        <mat-label>Link do YouTube</mat-label>
+        <input matInput formControlName="musica" />
+      </mat-form-field>
 
       <button
         mat-icon-button
-        matSuffix
         color="primary"
-        *ngIf="musicaPreview"
         type="button"
-        (click)="confirmarMusica()"
+        (click)="confirmarLinkExterno()"
       >
         <mat-icon>check</mat-icon>
       </button>
-    </mat-form-field>
+    </div>
 
     <app-lista-video-youtube
       [sugestoes]="videoManual ? [videoManual] : musicasSugeridas"
-      formControlName="musica">
+      [ngModel]="musicaSelecionada"
+      (ngModelChange)="onVideoSelecionado($event)"
+      [ngModelOptions]="{standalone: true}">
     </app-lista-video-youtube>
-
-    <button
-      *ngIf="musicaPreview && !videoManual"
-      mat-raised-button
-      color="primary"
-      class="full"
-      type="button"
-      (click)="confirmarMusica()"
-    >
-      Confirmar música
-    </button>
-
-    <button
-      *ngIf="videoManual"
-      mat-stroked-button
-      color="warn"
-      class="full"
-      type="button"
-      (click)="trocarMusica()"
-    >
-      Trocar música
-    </button>
   </mat-card>
 
   <!-- Mensagem -->
