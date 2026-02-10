@@ -20,6 +20,7 @@ import { ListaVideoYoutubeComponent } from '../../../../shared/components/lista-
 import { IYoutubeSugestao } from '../../../../shared/interfaces/estrutura.interface';
 import { YoutubeService } from '../../@suport/services/youtube.service';
 import { SelectCodigoPaisComponent } from '../../../../shared/components/select-codigo-pais/select-codigo-pais.component';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 
 interface FotoUpload {
@@ -43,7 +44,8 @@ interface FotoUpload {
   MatDatepickerModule,
   MatNativeDateModule,
   ListaVideoYoutubeComponent,
-  SelectCodigoPaisComponent
+  SelectCodigoPaisComponent,
+  MatSnackBarModule
 ],
   templateUrl: './criar-pagina.html',
   styleUrl: './criar-pagina.css',
@@ -51,22 +53,23 @@ interface FotoUpload {
 export class CriarPagina {
 
   fotos: FotoUpload[] = [];
-esconderSenha = true;
+  esconderSenha = true;
+  shakeInput = false;
 
   musicaPreview?: IYoutubeSugestao;
-videoManual?: IYoutubeSugestao;
-form!: FormGroup<{
-  nome1: FormControl<string>;
-  nome2: FormControl<string>;
-  dataEspecial: FormControl<Date | null>;
-  musica: FormControl<string>;
-  mensagem: FormControl<string>;
-  plano: FormControl<string>;
-  email: FormControl<string>;
-  senha: FormControl<string>;
-  ddi: FormControl<string>;
-  telefone: FormControl<string>;
-}>;
+  videoManual?: IYoutubeSugestao;
+  form!: FormGroup<{
+    nome1: FormControl<string>;
+    nome2: FormControl<string>;
+    dataEspecial: FormControl<Date | null>;
+    musica: FormControl<string>;
+    mensagem: FormControl<string>;
+    plano: FormControl<string>;
+    email: FormControl<string>;
+    senha: FormControl<string>;
+    ddi: FormControl<string>;
+    telefone: FormControl<string>;
+  }>;
 
  musicasSugeridas: IYoutubeSugestao[] = [
     {
@@ -85,7 +88,10 @@ form!: FormGroup<{
       duracao: '04:31'
     }
   ];
-  constructor(private fb: FormBuilder,  private youtubeService: YoutubeService
+  constructor(
+    private fb: FormBuilder,
+    private youtubeService: YoutubeService,
+    private snackBar: MatSnackBar
 ) {}
 
 ngOnInit() {
@@ -140,9 +146,10 @@ ngOnInit() {
 
 
   this.form.get('musica')!.valueChanges.subscribe(url => {
+  this.videoManual = undefined;
+
   if (!url) {
     this.musicaPreview = undefined;
-    this.videoManual = undefined;
     return;
   }
 
@@ -244,17 +251,19 @@ onMusicaInput(event: Event) {
   this.form.get('musica')?.setValue(value);
 }
 
+confirmarLinkExterno() {
+  const musicaControl = this.form.get('musica');
+  if (!musicaControl?.value) {
+      this.snackBar.open('Informe o link do YouTube para continuar', 'OK', { duration: 3000 });
+      this.shakeInput = true;
+      setTimeout(() => this.shakeInput = false, 300);
+      return;
+  }
 
-
-confirmarMusica() {
-  if (!this.musicaPreview) return;
-
-  this.videoManual = this.musicaPreview;
-  this.musicaPreview = undefined;
-}
-trocarMusica() {
-  this.videoManual = undefined;
-  this.form.get('musica')?.reset('');
+  if (this.musicaPreview) {
+      this.videoManual = this.musicaPreview;
+      this.musicaPreview = undefined;
+  }
 }
 
 }

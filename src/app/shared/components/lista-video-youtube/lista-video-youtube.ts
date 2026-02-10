@@ -5,7 +5,9 @@ import {
   forwardRef,
   Input,
   OnDestroy,
-  OnInit
+  OnInit,
+  OnChanges,
+  SimpleChanges
 } from '@angular/core';
 import {
   ControlValueAccessor,
@@ -50,7 +52,7 @@ declare global {
   ]
 })
 export class ListaVideoYoutubeComponent
-  implements ControlValueAccessor, OnInit, OnDestroy {
+  implements ControlValueAccessor, OnInit, OnDestroy, OnChanges {
 
   @Input() sugestoes: IYoutubeSugestao[] = [];
 
@@ -68,6 +70,7 @@ export class ListaVideoYoutubeComponent
   writeValue(value: string | null): void {
     if (!value) {
       this.selecionado = undefined;
+      this.confirmado = undefined;
       return;
     }
 
@@ -75,12 +78,15 @@ export class ListaVideoYoutubeComponent
       /(?:youtube\.com\/.*v=|youtu\.be\/)([^&]+)/
     );
 
-    this.selecionado = match ? match[1] : undefined;
+    const videoId = match ? match[1] : undefined;
+    this.selecionado = videoId;
 
-    if (this.sugestoes.length === 1) {
-  this.confirmado = this.sugestoes[0].videoId;
-}
-
+    if (videoId) {
+      const found = this.sugestoes.find(s => s.videoId === videoId);
+      if (found) {
+        this.confirmado = videoId;
+      }
+    }
   }
 
   registerOnChange(fn: any): void {
@@ -92,6 +98,25 @@ export class ListaVideoYoutubeComponent
   }
 
   // ===== Lifecycle =====
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['sugestoes']) {
+      // Se houver apenas uma sugestão (caso do videoManual), confirmamos automaticamente
+      if (this.sugestoes.length === 1) {
+        const videoId = this.sugestoes[0].videoId;
+        this.confirmado = videoId;
+        this.selecionado = videoId;
+      }
+
+      // Verifica se o selecionado ainda está na lista (para outros casos)
+      if (this.selecionado) {
+        const found = this.sugestoes.find(s => s.videoId === this.selecionado);
+        if (found) {
+          this.confirmado = this.selecionado;
+        }
+      }
+    }
+  }
+
   ngOnInit(): void {
     if (window.YT?.Player) {
       this.ytReady = true;
@@ -196,6 +221,7 @@ confirmar(videoId: string): void {
   }
 
   // ✅ fluxo normal de confirmação
+  this.player?.stopVideo();
   this.confirmado = videoId;
   this.selecionado = videoId;
 
