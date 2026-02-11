@@ -129,25 +129,3 @@ mat-form-field {
 .shake {
   animation: shake 0.3s ease-in-out;
 }
-
-.photos-wrapper {
-  position: relative;
-  width: 100%;
-}
-
-.scroll-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
-  background-color: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-
-.scroll-btn.left {
-  left: 0;
-}
-
-.scroll-btn.right {
-  right: 0;
-}

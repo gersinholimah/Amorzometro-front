@@ -78,49 +78,28 @@
       (change)="onSelecionarFotos($event)"
     />
 
-    <div class="photos-wrapper">
-      <button
-        type="button"
-        mat-icon-button
-        class="scroll-btn left"
-        (click)="scrollLeft()"
-        *ngIf="showScrollButtons">
-        <mat-icon>chevron_left</mat-icon>
-      </button>
-
+    <div
+      class="photos"
+      cdkDropList
+      cdkDropListOrientation="horizontal"
+      (cdkDropListDropped)="drop($event)"
+    >
       <div
-        class="photos"
-        #scrollContainer
-        cdkDropList
-        cdkDropListOrientation="horizontal"
-        (cdkDropListDropped)="drop($event)"
+        class="photo"
+        *ngFor="let foto of fotos; let i = index"
+        cdkDrag
       >
-        <div
-          class="photo"
-          *ngFor="let foto of fotos; let i = index"
-          cdkDrag
+        <img [src]="foto.preview" />
+
+        <button
+          mat-icon-button
+          color="warn"
+          type="button"
+          (click)="removerFoto(i)"
         >
-          <img [src]="foto.preview" />
-
-          <button
-            mat-icon-button
-            color="warn"
-            type="button"
-            (click)="removerFoto(i)"
-          >
-            <mat-icon>close</mat-icon>
-          </button>
-        </div>
+          <mat-icon>close</mat-icon>
+        </button>
       </div>
-
-      <button
-        type="button"
-        mat-icon-button
-        class="scroll-btn right"
-        (click)="scrollRight()"
-        *ngIf="showScrollButtons">
-        <mat-icon>chevron_right</mat-icon>
-      </button>
     </div>
 
     <button

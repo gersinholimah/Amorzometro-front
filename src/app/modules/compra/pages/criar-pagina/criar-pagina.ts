@@ -4,7 +4,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
-import { Component, ElementRef, ViewChild, AfterViewInit, HostListener, ChangeDetectorRef } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatCardModule } from '@angular/material/card';
@@ -51,10 +51,7 @@ interface FotoUpload {
   templateUrl: './criar-pagina.html',
   styleUrl: './criar-pagina.css',
 })
-export class CriarPagina implements AfterViewInit {
-
-  @ViewChild('scrollContainer') scrollContainer!: ElementRef<HTMLElement>;
-  showScrollButtons = false;
+export class CriarPagina {
 
   fotos: FotoUpload[] = [];
   esconderSenha = true;
@@ -96,8 +93,7 @@ export class CriarPagina implements AfterViewInit {
   constructor(
     private fb: FormBuilder,
     private youtubeService: YoutubeService,
-    private snackBar: MatSnackBar,
-    private cdr: ChangeDetectorRef
+    private snackBar: MatSnackBar
 ) {}
 
 ngOnInit() {
@@ -217,10 +213,6 @@ ngOnDestroy() {
   });
 
   input.value = '';
-  setTimeout(() => {
-    this.checkOverflow();
-    this.cdr.detectChanges();
-  }, 500);
 }
 
   drop(event: CdkDragDrop<FotoUpload[]>) {
@@ -233,41 +225,12 @@ ngOnDestroy() {
   URL.revokeObjectURL(this.fotos[index].preview);
   this.fotos.splice(index, 1);
   this.atualizarOrdem();
-  setTimeout(() => {
-    this.checkOverflow();
-    this.cdr.detectChanges();
-  }, 500);
 }
   private atualizarOrdem() {
     this.fotos.forEach((f, i) => f.order = i);
   }
 
-  ngAfterViewInit() {
-    this.checkOverflow();
-    this.cdr.detectChanges();
-  }
-
-  @HostListener('window:resize')
-  onResize() {
-    this.checkOverflow();
-  }
-
-  checkOverflow() {
-    if (this.scrollContainer?.nativeElement) {
-      const el = this.scrollContainer.nativeElement;
-      this.showScrollButtons = el.scrollWidth > el.clientWidth;
-    }
-  }
-
-  scrollLeft() {
-    this.scrollContainer.nativeElement.scrollBy({ left: -200, behavior: 'smooth' });
-  }
-
-  scrollRight() {
-    this.scrollContainer.nativeElement.scrollBy({ left: 200, behavior: 'smooth' });
-  }
-
-  montarFormData(): FormData {
+montarFormData(): FormData {
   const formData = new FormData();
 
   this.fotos
