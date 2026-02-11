@@ -100,13 +100,16 @@
           *ngFor="let foto of fotos; let i = index"
           cdkDrag
         >
-          <img [src]="foto.preview" />
+          <div class="skeleton-shimmer photo-skeleton" *ngIf="foto.isLoading"></div>
+
+          <img [src]="foto.preview" *ngIf="!foto.isLoading" />
 
           <button
             mat-icon-button
             color="warn"
             type="button"
             (click)="removerFoto(i)"
+            *ngIf="!foto.isLoading"
           >
             <mat-icon>close</mat-icon>
           </button>

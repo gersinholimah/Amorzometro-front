@@ -7,7 +7,8 @@ import {
   OnDestroy,
   OnInit,
   OnChanges,
-  SimpleChanges
+  SimpleChanges,
+  ChangeDetectorRef
 } from '@angular/core';
 import {
   ControlValueAccessor,
@@ -17,6 +18,7 @@ import {
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 export interface IYoutubeSugestao {
   videoId: string;
@@ -38,7 +40,8 @@ declare global {
     CommonModule,
     MatCardModule,
     MatListModule,
-    MatIconModule
+    MatIconModule,
+    MatProgressSpinnerModule
   ],
     encapsulation: ViewEncapsulation.None,
   templateUrl: './lista-video-youtube.html',
@@ -62,6 +65,12 @@ export class ListaVideoYoutubeComponent
   ytReady = false;
   confirmado?: string;
 
+  // Loading Flags
+  thumbLoadingMap: Record<string, boolean> = {};
+  playerLoading = false;
+
+
+  constructor(private cdr: ChangeDetectorRef) {}
 
   // ===== ControlValueAccessor =====
   onChange = (_: string | null) => {};
@@ -100,6 +109,13 @@ export class ListaVideoYoutubeComponent
   // ===== Lifecycle =====
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['sugestoes']) {
+      // Inicializa loading dos thumbs
+      if (this.sugestoes) {
+        this.sugestoes.forEach(s => {
+          this.thumbLoadingMap[s.videoId] = true;
+        });
+      }
+
       // Se houver apenas uma sugestão (caso do videoManual), confirmamos automaticamente
       if (this.sugestoes.length === 1) {
         const videoId = this.sugestoes[0].videoId;
@@ -129,11 +145,16 @@ export class ListaVideoYoutubeComponent
 
     window.onYouTubeIframeAPIReady = () => {
       this.ytReady = true;
+      this.cdr.detectChanges();
     };
   }
 
   ngOnDestroy(): void {
     this.player?.destroy();
+  }
+
+  onThumbLoad(videoId: string): void {
+    this.thumbLoadingMap[videoId] = false;
   }
 
   // ===== Actions =====
@@ -142,6 +163,7 @@ export class ListaVideoYoutubeComponent
 
     this.tocando = videoId;
     this.selecionado = videoId;
+    this.playerLoading = true;
 
     const url = `https://www.youtube.com/watch?v=${videoId}`;
     this.onChange(url);
@@ -155,6 +177,14 @@ export class ListaVideoYoutubeComponent
           controls: 1,
           rel: 0,
           modestbranding: 1
+        },
+        events: {
+          'onStateChange': (event: any) => {
+            if (event.data === window.YT.PlayerState.PLAYING) {
+              this.playerLoading = false;
+              this.cdr.detectChanges();
+            }
+          }
         }
       });
     } else {
@@ -180,6 +210,7 @@ togglePlay(videoId: string): void {
   // novo vídeo → seleciona + toca
   this.selecionado = videoId;
   this.tocando = videoId;
+  this.playerLoading = true;
 
   if (!this.player) {
     this.player = new window.YT.Player('yt-player', {
@@ -189,6 +220,14 @@ togglePlay(videoId: string): void {
         controls: 0,
         rel: 0,
         modestbranding: 1
+      },
+      events: {
+        'onStateChange': (event: any) => {
+          if (event.data === window.YT.PlayerState.PLAYING) {
+            this.playerLoading = false;
+            this.cdr.detectChanges();
+          }
+        }
       }
     });
   } else {
@@ -221,22 +260,4 @@ confirmar(videoId: string): void {
   this.onChange(url);
   this.onTouched();
 }
-
-/*
-confirmar(videoId: string): void {
-  // se clicar no mesmo → desfaz confirmação
-  if (this.confirmado === videoId) {
-    this.confirmado = undefined;
-    return;
-  }
-
-  // confirma este e esconde os outros
-  this.confirmado = videoId;
-  this.selecionado = videoId;
-
-  const url = `https://www.youtube.com/watch?v=${videoId}`;
-  this.onChange(url);
-  this.onTouched();
-}
-*/
 }

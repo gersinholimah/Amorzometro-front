@@ -27,6 +27,7 @@ interface FotoUpload {
   file: File;
   preview: string;
   order: number;
+  isLoading?: boolean;
 }
 
 @Component({
@@ -209,18 +210,27 @@ ngOnDestroy() {
   if (!input.files) return;
 
   Array.from(input.files).forEach(file => {
-    this.fotos.push({
+    const novoItem: FotoUpload = {
       file,
-      preview: URL.createObjectURL(file), // 🚀 instantâneo
-      order: this.fotos.length
-    });
+      preview: '',
+      order: this.fotos.length,
+      isLoading: true
+    };
+    this.fotos.push(novoItem);
+
+    setTimeout(() => {
+      novoItem.preview = URL.createObjectURL(file);
+      novoItem.isLoading = false;
+      this.cdr.detectChanges();
+      this.checkOverflow();
+    }, 500);
   });
 
   input.value = '';
   setTimeout(() => {
     this.checkOverflow();
     this.cdr.detectChanges();
-  }, 500);
+  }, 100);
 }
 
   drop(event: CdkDragDrop<FotoUpload[]>) {

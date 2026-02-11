@@ -1,5 +1,6 @@
 <mat-card class="player" style="display: none;">
   <div class="player-wrapper">
+    <mat-spinner *ngIf="playerLoading || !ytReady" [diameter]="50" class="player-spinner"></mat-spinner>
     <div id="yt-player"></div>
 
     <div class="placeholder" *ngIf="!tocando">
@@ -25,10 +26,13 @@
     class="thumb-wrapper"
     (click)="togglePlay(video.videoId); $event.stopPropagation()"
   >
+    <div class="skeleton-shimmer thumb-skeleton" *ngIf="thumbLoadingMap[video.videoId]"></div>
+
     <img
       class="thumb"
       [src]="'https://img.youtube.com/vi/' + video.videoId + '/mqdefault.jpg'"
       alt="Thumbnail"
+      (load)="onThumbLoad(video.videoId)"
     />
 
     <mat-icon class="play-overlay">
