@@ -1,4 +1,4 @@
-<mat-card class="player" style="display: none;">
+<mat-card class="player" [class.hidden]="!tocando">
   <div class="player-wrapper">
     <mat-spinner *ngIf="playerLoading || !ytReady" [diameter]="50" class="player-spinner"></mat-spinner>
     <div id="yt-player"></div>

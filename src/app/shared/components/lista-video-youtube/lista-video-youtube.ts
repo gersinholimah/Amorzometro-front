@@ -112,7 +112,10 @@ export class ListaVideoYoutubeComponent
       // Inicializa loading dos thumbs
       if (this.sugestoes) {
         this.sugestoes.forEach(s => {
-          this.thumbLoadingMap[s.videoId] = true;
+          // If not already explicitly loaded (false), set to true
+          if (this.thumbLoadingMap[s.videoId] !== false) {
+             this.thumbLoadingMap[s.videoId] = true;
+          }
         });
       }
 
@@ -155,41 +158,13 @@ export class ListaVideoYoutubeComponent
 
   onThumbLoad(videoId: string): void {
     this.thumbLoadingMap[videoId] = false;
+    this.cdr.detectChanges();
   }
 
   // ===== Actions =====
   play(videoId: string): void {
-    if (!this.ytReady) return;
-
-    this.tocando = videoId;
-    this.selecionado = videoId;
-    this.playerLoading = true;
-
-    const url = `https://www.youtube.com/watch?v=${videoId}`;
-    this.onChange(url);
-    this.onTouched();
-
-    if (!this.player) {
-      this.player = new window.YT.Player('yt-player', {
-        videoId,
-        playerVars: {
-          autoplay: 1,
-          controls: 1,
-          rel: 0,
-          modestbranding: 1
-        },
-        events: {
-          'onStateChange': (event: any) => {
-            if (event.data === window.YT.PlayerState.PLAYING) {
-              this.playerLoading = false;
-              this.cdr.detectChanges();
-            }
-          }
-        }
-      });
-    } else {
-      this.player.loadVideoById(videoId);
-    }
+    // Alias to togglePlay logic for consistency, though unused in template
+    this.togglePlay(videoId);
   }
 
   onItemClick(videoId: string): void {
@@ -204,6 +179,7 @@ togglePlay(videoId: string): void {
   if (this.tocando === videoId) {
     this.player?.pauseVideo();
     this.tocando = undefined;
+    this.playerLoading = false;
     return;
   }
 
@@ -212,26 +188,40 @@ togglePlay(videoId: string): void {
   this.tocando = videoId;
   this.playerLoading = true;
 
+  const url = `https://www.youtube.com/watch?v=${videoId}`;
+  this.onChange(url);
+  this.onTouched();
+
   if (!this.player) {
     this.player = new window.YT.Player('yt-player', {
       videoId,
       playerVars: {
         autoplay: 1,
-        controls: 0,
+        controls: 1,
         rel: 0,
         modestbranding: 1
       },
       events: {
         'onStateChange': (event: any) => {
+          // PLAYING=1, BUFFERING=3
           if (event.data === window.YT.PlayerState.PLAYING) {
             this.playerLoading = false;
             this.cdr.detectChanges();
           }
+        },
+        'onError': () => {
+          this.playerLoading = false;
+          this.cdr.detectChanges();
+        },
+        'onReady': (event: any) => {
+           event.target.playVideo();
         }
       }
     });
   } else {
     this.player.loadVideoById(videoId);
+    // Force play if not autoplaying
+    // Note: loadVideoById usually auto-plays, but just in case
   }
 }
 
@@ -241,6 +231,7 @@ confirmar(videoId: string): void {
     this.confirmado = undefined;
     this.selecionado = undefined;
     this.tocando = undefined;
+    this.playerLoading = false;
 
     this.player?.stopVideo();
 
@@ -253,6 +244,7 @@ confirmar(videoId: string): void {
   // ✅ fluxo normal de confirmação
   this.player?.stopVideo();
   this.tocando = undefined; // <--- Icon resets to play
+  this.playerLoading = false;
   this.confirmado = videoId;
   this.selecionado = videoId;
 
