@@ -50,6 +50,51 @@ mat-form-field {
   gap: 8px;
 }
 
+.plan-segment {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  gap: 0;
+}
+
+/* remove borda padrão do group */
+.plan-segment .mat-button-toggle-group {
+  border: none;
+}
+
+/* botão padrão */
+.plan-segment .mat-button-toggle {
+  flex: 1;
+  background: white;
+  color: black;
+  border: 1px solid black;
+  border-right: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* último botão precisa da borda direita */
+.plan-segment .mat-button-toggle:last-child {
+  border-right: 1px solid black;
+}
+
+/* estado selecionado */
+.plan-segment .mat-button-toggle.mat-button-toggle-checked {
+  background: black !important;
+  color: white !important;
+}
+
+/* ícone normal */
+.plan-segment .mat-button-toggle mat-icon {
+  color: black;
+}
+
+/* ícone selecionado */
+.plan-segment .mat-button-toggle.mat-button-toggle-checked mat-icon {
+  color: white !important;
+}
 
 
 .photo {
@@ -145,9 +190,9 @@ mat-form-field {
 }
 
 .scroll-btn.left {
-  left: 0;
+  left: -13px;
 }
 
 .scroll-btn.right {
-  right: 0;
+  right: -13px;
 }

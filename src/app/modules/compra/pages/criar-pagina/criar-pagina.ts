@@ -22,6 +22,7 @@ import { YoutubeService } from '../../@suport/services/youtube.service';
 import { SelectCodigoPaisComponent } from '../../../../shared/components/select-codigo-pais/select-codigo-pais.component';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 interface FotoUpload {
   file: File;
@@ -46,7 +47,8 @@ interface FotoUpload {
   MatNativeDateModule,
   ListaVideoYoutubeComponent,
   SelectCodigoPaisComponent,
-  MatSnackBarModule
+  MatSnackBarModule,
+  MatButtonToggleModule
 ],
   templateUrl: './criar-pagina.html',
   styleUrl: './criar-pagina.css',
@@ -63,18 +65,19 @@ export class CriarPagina implements AfterViewInit {
   musicaSelecionada: string | null = null;
   musicaPreview?: IYoutubeSugestao;
   videoManual?: IYoutubeSugestao;
-  form!: FormGroup<{
-    nome1: FormControl<string>;
-    nome2: FormControl<string>;
-    dataEspecial: FormControl<Date | null>;
-    musica: FormControl<string>;
-    mensagem: FormControl<string>;
-    plano: FormControl<string>;
-    email: FormControl<string>;
-    senha: FormControl<string>;
-    ddi: FormControl<string>;
-    telefone: FormControl<string>;
-  }>;
+form!: FormGroup<{
+  nome1: FormControl<string>;
+  nome2: FormControl<string>;
+  dataEspecial: FormControl<Date | null>;
+  musica: FormControl<string>;
+  mensagem: FormControl<string>;
+  plano: FormControl<'eterno' | 'anual' | 'mensal' | ''>; // ✅ corrigido
+  email: FormControl<string>;
+  senha: FormControl<string>;
+  ddi: FormControl<string>;
+  telefone: FormControl<string>;
+}>;
+
 
  musicasSugeridas: IYoutubeSugestao[] = [
     {
@@ -121,10 +124,10 @@ ngOnInit() {
     nonNullable: true,
     validators: [Validators.required, Validators.minLength(10)]
   }),
-  plano: this.fb.control('', {
-    nonNullable: true,
-    validators: Validators.required
-  }),
+  plano: this.fb.control<'eterno' | 'anual' | 'mensal' | ''>('', {
+  nonNullable: true,
+  validators: Validators.required
+}),
 
   email: this.fb.control('', {
     nonNullable: true,

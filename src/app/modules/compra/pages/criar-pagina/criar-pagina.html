@@ -189,33 +189,37 @@
   </mat-card>
 
   <!-- Plano -->
-  <mat-card class="center">
-    <h3>Plano</h3>
+ <!-- Plano -->
+<mat-card class="center">
+  <h3>Plano</h3>
 
-    <div class="plans">
-      <button mat-stroked-button type="button"
-        [color]="form.value.plano === 'sempre' ? 'primary' : ''"
-        (click)="form.patchValue({ plano: 'sempre' })">
-        Para Sempre
-      </button>
+  <mat-button-toggle-group
+    formControlName="plano"
+    class="plan-segment"
+  >
 
-      <button mat-stroked-button type="button"
-        [color]="form.value.plano === 'ano' ? 'primary' : ''"
-        (click)="form.patchValue({ plano: 'ano' })">
-        Por 1 Ano
-      </button>
+    <mat-button-toggle value="eterno">
+      <mat-icon>all_inclusive</mat-icon>
+      Eterno
+    </mat-button-toggle>
 
-      <button mat-stroked-button type="button"
-        [color]="form.value.plano === 'mes' ? 'primary' : ''"
-        (click)="form.patchValue({ plano: 'mes' })">
-        Por 1 Mês
-      </button>
-    </div>
+    <mat-button-toggle value="anual">
+      <mat-icon>calendar_today</mat-icon>
+      Anual
+    </mat-button-toggle>
 
-    <mat-error *ngIf="f.plano.touched && f.plano.errors">
-      Escolha um plano
-    </mat-error>
-  </mat-card>
+    <mat-button-toggle value="mensal">
+      <mat-icon>date_range</mat-icon>
+      Mensal
+    </mat-button-toggle>
+
+  </mat-button-toggle-group>
+
+  <mat-error *ngIf="f.plano.touched && f.plano.errors">
+    Escolha um plano
+  </mat-error>
+</mat-card>
+
 
   <!-- Contato -->
   <mat-card>
