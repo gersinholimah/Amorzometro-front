@@ -97,13 +97,13 @@ form!: FormGroup<{
     }
   ];
 
-@ViewChild('cardVamosComecar') cardVamosComecar!: ElementRef;
-@ViewChild('cardNossoDia') cardNossoDia!: ElementRef;
-@ViewChild('cardMomentos') cardMomentos!: ElementRef;
-@ViewChild('cardMusica') cardMusica!: ElementRef;
-@ViewChild('cardMensagem') cardMensagem!: ElementRef;
-@ViewChild('cardPlano') cardPlano!: ElementRef;
-@ViewChild('cardContato') cardContato!: ElementRef;
+@ViewChild('cardVamosComecar', { read: ElementRef }) cardVamosComecar!: ElementRef;
+@ViewChild('cardNossoDia', { read: ElementRef }) cardNossoDia!: ElementRef;
+@ViewChild('cardMomentos', { read: ElementRef }) cardMomentos!: ElementRef;
+@ViewChild('cardMusica', { read: ElementRef }) cardMusica!: ElementRef;
+@ViewChild('cardMensagem', { read: ElementRef }) cardMensagem!: ElementRef;
+@ViewChild('cardPlano', { read: ElementRef }) cardPlano!: ElementRef;
+@ViewChild('cardContato', { read: ElementRef }) cardContato!: ElementRef;
 
 
   constructor(
