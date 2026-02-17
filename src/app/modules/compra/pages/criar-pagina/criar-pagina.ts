@@ -96,6 +96,16 @@ form!: FormGroup<{
       duracao: '04:31'
     }
   ];
+
+@ViewChild('cardVamosComecar') cardVamosComecar!: ElementRef;
+@ViewChild('cardNossoDia') cardNossoDia!: ElementRef;
+@ViewChild('cardMomentos') cardMomentos!: ElementRef;
+@ViewChild('cardMusica') cardMusica!: ElementRef;
+@ViewChild('cardMensagem') cardMensagem!: ElementRef;
+@ViewChild('cardPlano') cardPlano!: ElementRef;
+@ViewChild('cardContato') cardContato!: ElementRef;
+
+
   constructor(
     private fb: FormBuilder,
     private youtubeService: YoutubeService,
@@ -284,21 +294,62 @@ ngOnDestroy() {
 
 
   submit() {
-    if (this.form.invalid || this.fotos.length === 0) {
-      this.form.markAllAsTouched();
+
+  this.form.markAllAsTouched();
+
+  if (this.form.invalid || this.fotos.length === 0) {
+
+    // ORDEM IMPORTA — top to bottom
+
+    if (this.f.nome1.invalid || this.f.nome2.invalid) {
+      this.scrollToCard(this.cardVamosComecar);
       return;
     }
 
-    const formData = this.montarFormData();
+    if (this.f.dataEspecial.invalid) {
+      this.scrollToCard(this.cardNossoDia);
+      return;
+    }
 
-    Object.entries(this.form.value).forEach(([key, value]) => {
-      if (value !== null) {
-        formData.append(key, value as any);
-      }
-    });
+    if (this.fotos.length === 0) {
+      this.scrollToCard(this.cardMomentos);
+      return;
+    }
 
-    // this.http.post('/api/rascunho', formData).subscribe();
+    if (this.f.musica.invalid && !this.musicaSelecionada) {
+      this.scrollToCard(this.cardMusica);
+      return;
+    }
+
+    if (this.f.mensagem.invalid) {
+      this.scrollToCard(this.cardMensagem);
+      return;
+    }
+
+    if (this.f.plano.invalid) {
+      this.scrollToCard(this.cardPlano);
+      return;
+    }
+
+    if (this.f.email.invalid || this.f.telefone.invalid || this.f.senha.invalid) {
+      this.scrollToCard(this.cardContato);
+      return;
+    }
+
+    return;
   }
+
+  // 🔥 se chegou aqui está válido
+  const formData = this.montarFormData();
+
+  Object.entries(this.form.value).forEach(([key, value]) => {
+    if (value !== null) {
+      formData.append(key, value as any);
+    }
+  });
+
+  console.log('Enviando...');
+}
 
 onMusicaInput(event: Event) {
   const value = (event.target as HTMLInputElement).value;
@@ -334,5 +385,31 @@ confirmarLinkExterno() {
       this.musicaPreview = undefined;
   }
 }
+
+
+
+private scrollToCard(card: ElementRef) {
+  setTimeout(() => {
+
+    const element = card.nativeElement as HTMLElement;
+
+const headerHeight = 100; // se tiver
+const y = element.getBoundingClientRect().top + window.scrollY - headerHeight;
+    window.scrollTo({
+      top: y,
+      behavior: 'smooth'
+    });
+
+    element.classList.add('shake');
+
+    setTimeout(() => {
+      element.classList.remove('shake');
+    }, 400);
+
+  });
+}
+
+
+
 
 }

@@ -11,7 +11,7 @@
   </div>
 
   <!-- Vamos começar -->
-  <mat-card>
+  <mat-card #cardVamosComecar>
     <h3>Vamos começar</h3>
 
     <mat-form-field appearance="outline">
@@ -42,7 +42,7 @@
   </mat-card>
 
   <!-- Nosso Dia -->
-  <mat-card class="center">
+  <mat-card class="center" #cardNossoDia>
     <h3>Nosso Dia</h3>
 
     <mat-form-field appearance="outline">
@@ -66,7 +66,7 @@
   </mat-card>
 
   <!-- Nossos Momentos -->
-  <mat-card>
+  <mat-card #cardMomentos>
     <h3 class="center">Nossos Momentos</h3>
 
     <input
@@ -143,10 +143,19 @@
   </mat-card>
 
   <!-- Música -->
-  <mat-card>
-    <h3>Música</h3>
+  <mat-card #cardMusica>
+     <h3>Sugestões de música</h3>
 
-    <div style="display: flex; gap: 8px; align-items: center;" *ngIf="!musicaSelecionada">
+    <app-lista-video-youtube
+      [sugestoes]="videoManual ? [videoManual] : musicasSugeridas"
+      [ngModel]="musicaSelecionada"
+      (ngModelChange)="onVideoSelecionado($event)"
+      [ngModelOptions]="{standalone: true}">
+    </app-lista-video-youtube>
+
+    <div  *ngIf="!musicaSelecionada">
+      <h2>ou cole seu link aqui</h2>
+    <div style="display: flex; gap: 8px; align-items: center;">
       <mat-form-field appearance="outline" class="full" [class.shake]="shakeInput">
         <mat-label>Link do YouTube</mat-label>
         <input matInput formControlName="musica" />
@@ -161,17 +170,11 @@
         <mat-icon>check</mat-icon>
       </button>
     </div>
-
-    <app-lista-video-youtube
-      [sugestoes]="videoManual ? [videoManual] : musicasSugeridas"
-      [ngModel]="musicaSelecionada"
-      (ngModelChange)="onVideoSelecionado($event)"
-      [ngModelOptions]="{standalone: true}">
-    </app-lista-video-youtube>
+    </div>
   </mat-card>
 
   <!-- Mensagem -->
-  <mat-card>
+  <mat-card #cardMensagem>
     <h3 class="center">O mais importante</h3>
 
     <mat-form-field appearance="outline">
@@ -190,7 +193,7 @@
 
   <!-- Plano -->
  <!-- Plano -->
-<mat-card class="center">
+<mat-card class="center" #cardPlano>
   <h3>Plano</h3>
 
   <mat-button-toggle-group
@@ -222,7 +225,7 @@
 
 
   <!-- Contato -->
-  <mat-card>
+  <mat-card #cardContato>
     <mat-form-field appearance="outline" class="full">
       <mat-label>Email</mat-label>
       <mat-icon matPrefix>email</mat-icon>
@@ -288,12 +291,13 @@
   </mat-card>
 
   <!-- Submit -->
+       <!-- [disabled]="form.invalid || !fotos.length" -->
+
   <button
     mat-raised-button
     color="primary"
     class="full"
     type="submit"
-    [disabled]="form.invalid || !fotos.length"
   >
     Continuar
   </button>
