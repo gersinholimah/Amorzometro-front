@@ -1,6 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CriarPagina } from './criar-pagina';
+import { StorageIndexedDbService } from '../../../../shared/service/storage-indexeddb.service';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+class MockStorageIndexedDbService {
+  async get(id: string) { return undefined; }
+  async save(data: any) { return undefined; }
+}
 
 describe('CriarPagina', () => {
   let component: CriarPagina;
@@ -8,7 +15,10 @@ describe('CriarPagina', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CriarPagina]
+      imports: [CriarPagina, BrowserAnimationsModule],
+      providers: [
+        { provide: StorageIndexedDbService, useClass: MockStorageIndexedDbService }
+      ]
     })
     .compileComponents();
 
