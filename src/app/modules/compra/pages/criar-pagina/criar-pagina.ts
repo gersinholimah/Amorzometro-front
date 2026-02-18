@@ -200,7 +200,7 @@ async ngOnInit() {
     nonNullable: true,
     validators: [
       Validators.required,
-      Validators.pattern(/^[0-9]{8,15}$/)
+      Validators.pattern(/^[0-9]{10,11}$/)
     ]
   })
 });
@@ -266,7 +266,7 @@ async ngOnInit() {
         this.telefoneMask = '(00) 0000-0000||(00) 00000-0000';
         this.form.get('telefone')?.setValidators([
           Validators.required,
-          Validators.pattern(/^[0-9]{8,15}$/)
+          Validators.pattern(/^[0-9]{10,11}$/)
         ]);
       } else {
         this.telefoneMask = '0*';

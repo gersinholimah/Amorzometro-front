@@ -48,6 +48,28 @@ describe('CriarPagina', () => {
     expect(component.telefoneMask).toBe('(00) 0000-0000||(00) 00000-0000');
   });
 
+  it('should validate phone number length for +55', () => {
+    // Default +55
+    const control = component.form.get('telefone');
+
+    // 9 digits - Invalid
+    control?.setValue('119999999');
+    expect(control?.valid).toBeFalsy();
+    expect(control?.hasError('pattern')).toBeTruthy();
+
+    // 10 digits - Valid
+    control?.setValue('1122223333');
+    expect(control?.valid).toBeTruthy();
+
+    // 11 digits - Valid
+    control?.setValue('11999998888');
+    expect(control?.valid).toBeTruthy();
+
+    // 12 digits - Invalid
+    control?.setValue('119999988888');
+    expect(control?.valid).toBeFalsy();
+  });
+
   it('should limit photos to 9 when adding more than 9', () => {
     // Mock URL.createObjectURL
     const originalCreateObjectURL = URL.createObjectURL;
