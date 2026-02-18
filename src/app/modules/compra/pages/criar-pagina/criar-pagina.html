@@ -1,9 +1,8 @@
 <form
-  class="page"
   [formGroup]="form"
   (ngSubmit)="submit()"
 >
-
+<div class="page">
   <!-- Título -->
   <div class="header">
     <h2>Tempo Juntos</h2>
@@ -191,39 +190,75 @@
       </mat-error>
     </mat-form-field>
   </mat-card>
-
+</div>
   <!-- Plano -->
  <!-- Plano -->
-<mat-card class="center" #cardPlano>
-  <h3>Plano</h3>
+<mat-card class="plano-container" #cardPlano>
+  <h3 class="center">Escolha seu plano</h3>
 
-  <mat-button-toggle-group
-    formControlName="plano"
-    class="plan-segment"
-  >
+  <div class="plan-cards">
 
-    <mat-button-toggle value="eterno">
-      <mat-icon>all_inclusive</mat-icon>
-      Eterno
-    </mat-button-toggle>
 
-    <mat-button-toggle value="anual">
-      <mat-icon>calendar_today</mat-icon>
-      Anual
-    </mat-button-toggle>
+    <!-- ETERNO -->
+    <div
+      class="plan-card"
+      [class.selected]="f.plano.value === 'eterno'"
+      (click)="form.get('plano')?.setValue('eterno')"
+    >
 
-    <mat-button-toggle value="mensal">
-      <mat-icon>date_range</mat-icon>
-      Mensal
-    </mat-button-toggle>
+      <div class="badge">Melhor opção</div>
 
-  </mat-button-toggle-group>
+      <h2>Para Sempre</h2>
+
+      <div class="old-price">de R$ 69,90</div>
+
+      <div class="highlight">SÓ HOJE por apenas</div>
+
+      <div class="price">R$ 47,00</div>
+
+      <small>no PIX</small>
+
+      <div class="check" *ngIf="f.plano.value === 'eterno'">
+        <mat-icon>check</mat-icon>
+      </div>
+    </div>
+
+
+
+       <div
+      class="plan-card"
+      [class.selected]="f.plano.value === 'anual'"
+      (click)="form.get('plano')?.setValue('anual')"
+    >
+
+
+      <h2>Anual</h2>
+
+      <div class="old-price">de R$ 50,90</div>
+
+
+      <div class="price">R$ 38,00</div>
+
+      <small>no PIX</small>
+
+      <div class="check" *ngIf="f.plano.value === 'anual'">
+        <mat-icon>check</mat-icon>
+      </div>
+    </div>
+
+
+
+
+
+  </div>
 
   <mat-error *ngIf="f.plano.touched && f.plano.errors">
     Escolha um plano
   </mat-error>
 </mat-card>
 
+
+<div class="page">
 
   <!-- Contato -->
   <mat-card #cardContato>
@@ -302,5 +337,5 @@
   >
     Continuar
   </button>
-
+</div>
 </form>

@@ -76,6 +76,8 @@ form!: FormGroup<{
   musica: FormControl<string>;
   mensagem: FormControl<string>;
   plano: FormControl<'eterno' | 'anual' | 'mensal' | ''>; // ✅ corrigido
+  // plano: ['mensal', Validators.required]
+
   email: FormControl<string>;
   senha: FormControl<string>;
   ddi: FormControl<string>;
@@ -100,6 +102,35 @@ form!: FormGroup<{
       duracao: '04:31'
     }
   ];
+
+
+  planos = [
+  {
+    id: 'mensal',
+    nome: 'Mensal',
+    preco: 9.90,
+    precoAntigo: null,
+    destaque: false,
+    descricao: 'Pagamento mensal recorrente'
+  },
+  {
+    id: 'anual',
+    nome: 'Anual',
+    preco: 59.90,
+    precoAntigo: 99.90,
+    destaque: true,
+    descricao: 'Economize 40% no plano anual'
+  },
+  {
+    id: 'eterno',
+    nome: 'Para Sempre',
+    preco: 19.90,
+    precoAntigo: 39.90,
+    destaque: false,
+    descricao: 'Pagamento único vitalício'
+  }
+];
+
 
 @ViewChild('cardVamosComecar', { read: ElementRef }) cardVamosComecar!: ElementRef;
 @ViewChild('cardNossoDia', { read: ElementRef }) cardNossoDia!: ElementRef;
