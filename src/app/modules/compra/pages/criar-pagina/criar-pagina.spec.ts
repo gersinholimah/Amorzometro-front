@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CriarPagina } from './criar-pagina';
 import { StorageIndexedDbService } from '../../../../shared/service/storage-indexeddb.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { provideNgxMask } from 'ngx-mask';
 
 class MockStorageIndexedDbService {
   async get(id: string) { return undefined; }
@@ -17,7 +18,8 @@ describe('CriarPagina', () => {
     await TestBed.configureTestingModule({
       imports: [CriarPagina, BrowserAnimationsModule],
       providers: [
-        { provide: StorageIndexedDbService, useClass: MockStorageIndexedDbService }
+        { provide: StorageIndexedDbService, useClass: MockStorageIndexedDbService },
+        provideNgxMask()
       ]
     })
     .compileComponents();
