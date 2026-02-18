@@ -26,6 +26,7 @@ import { debounceTime } from 'rxjs/operators';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { NgxMaskDirective } from 'ngx-mask';
 
 interface FotoUpload {
   file: File;
@@ -51,7 +52,8 @@ interface FotoUpload {
   ListaVideoYoutubeComponent,
   SelectCodigoPaisComponent,
   MatSnackBarModule,
-  MatButtonToggleModule
+  MatButtonToggleModule,
+  NgxMaskDirective
 ],
   templateUrl: './criar-pagina.html',
   styleUrl: './criar-pagina.css',
@@ -69,10 +71,14 @@ export class CriarPagina implements AfterViewInit {
   musicaSelecionada: string | null = null;
   musicaPreview?: IYoutubeSugestao;
   videoManual?: IYoutubeSugestao;
+
+  datePickerControl = new FormControl<Date | null>(null);
+  telefoneMask = '(00) 0000-0000||(00) 00000-0000';
+
 form!: FormGroup<{
   nome1: FormControl<string>;
   nome2: FormControl<string>;
-  dataEspecial: FormControl<Date | null>;
+  dataEspecial: FormControl<string | null>;
   musica: FormControl<string>;
   mensagem: FormControl<string>;
   plano: FormControl<'eterno' | 'anual' | 'mensal' | ''>; // ✅ corrigido
@@ -159,7 +165,7 @@ async ngOnInit() {
     nonNullable: true,
     validators: [Validators.required, Validators.minLength(2)]
   }),
-  dataEspecial: this.fb.control<Date | null>(null, {
+  dataEspecial: this.fb.control<string | null>(null, {
     validators: Validators.required
   }),
   musica: this.fb.control('', {
@@ -194,7 +200,7 @@ async ngOnInit() {
     nonNullable: true,
     validators: [
       Validators.required,
-      Validators.pattern(/^[0-9]{8,15}$/)
+      Validators.pattern(/^[0-9]{10,11}$/)
     ]
   })
 });
@@ -237,14 +243,70 @@ async ngOnInit() {
     });
 });
 
+    // Sync Logic for Data Especial
+    this.form.get('dataEspecial')?.valueChanges.subscribe(val => {
+      if (val && val.length === 8) {
+        const day = +val.substring(0, 2);
+        const month = +val.substring(2, 4);
+        const year = +val.substring(4, 8);
+        const date = new Date(year, month - 1, day);
+        if (!isNaN(date.getTime())) {
+             const current = this.datePickerControl.value;
+             if (!current || current.getTime() !== date.getTime()) {
+                this.datePickerControl.setValue(date, { emitEvent: false });
+             }
+        }
+      } else if (!val) {
+          this.datePickerControl.setValue(null, { emitEvent: false });
+      }
+    });
+
+    this.form.get('ddi')?.valueChanges.subscribe(ddi => {
+      if (ddi === '+55') {
+        this.telefoneMask = '(00) 0000-0000||(00) 00000-0000';
+        this.form.get('telefone')?.setValidators([
+          Validators.required,
+          Validators.pattern(/^[0-9]{10,11}$/)
+        ]);
+      } else {
+        this.telefoneMask = '0*';
+        this.form.get('telefone')?.setValidators([
+          Validators.required,
+          Validators.pattern(/^[0-9]+$/)
+        ]);
+      }
+      this.form.get('telefone')?.updateValueAndValidity();
+    });
+
+    this.datePickerControl.valueChanges.subscribe(date => {
+      if (date) {
+        const d = date.getDate().toString().padStart(2, '0');
+        const m = (date.getMonth() + 1).toString().padStart(2, '0');
+        const y = date.getFullYear();
+        const str = `${d}${m}${y}`;
+        this.form.get('dataEspecial')?.setValue(str, { emitEvent: false });
+      }
+    });
+
     const draft = await this.storageService.get('draft');
     if (draft) {
       this.draftCriadoEm = draft.criadoEm;
 
       const { dataEspecial, ...rest } = draft.dados;
+      let dateStr = null;
+
+      if (dataEspecial) {
+          const d = new Date(dataEspecial);
+          const day = d.getDate().toString().padStart(2, '0');
+          const month = (d.getMonth() + 1).toString().padStart(2, '0');
+          const year = d.getFullYear();
+          dateStr = `${day}${month}${year}`;
+          this.datePickerControl.setValue(d, { emitEvent: false });
+      }
+
       this.form.patchValue({
         ...rest,
-        dataEspecial: dataEspecial ? new Date(dataEspecial) : null
+        dataEspecial: dateStr
       });
 
       if (draft.fotos?.length) {
@@ -437,9 +499,20 @@ ngOnDestroy() {
   async salvarDraft() {
     const { musica: _musicaControl, dataEspecial, ...rest } = this.form.getRawValue();
 
+    let dataEspecialISO: string | null = null;
+    if (dataEspecial && dataEspecial.length === 8) {
+         const day = +dataEspecial.substring(0, 2);
+         const month = +dataEspecial.substring(2, 4);
+         const year = +dataEspecial.substring(4, 8);
+         const date = new Date(year, month - 1, day);
+         if (!isNaN(date.getTime())) {
+             dataEspecialISO = date.toISOString();
+         }
+    }
+
     const dados: DadosStorage = {
       ...rest,
-      dataEspecial: dataEspecial ? dataEspecial.toISOString() : null,
+      dataEspecial: dataEspecialISO,
       plano: rest.plano as any
     };
 
