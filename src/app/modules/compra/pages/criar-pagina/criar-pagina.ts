@@ -17,9 +17,12 @@ import { youtubeUrlValidator } from '../../../../shared/validators/youtube-url.v
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, FormControl, FormsModule } from '@angular/forms';
 
 import { ListaVideoYoutubeComponent } from '../../../../shared/components/lista-video-youtube/lista-video-youtube';
-import { IYoutubeSugestao } from '../../../../shared/interfaces/estrutura.interface';
+import { IYoutubeSugestao, CriarPaginaStorage, DadosStorage, MusicaStorage } from '../../../../shared/interfaces/estrutura.interface';
 import { YoutubeService } from '../../@suport/services/youtube.service';
 import { SelectCodigoPaisComponent } from '../../../../shared/components/select-codigo-pais/select-codigo-pais.component';
+import { StorageIndexedDbService } from '../../../../shared/service/storage-indexeddb.service';
+import { TIPO_MUSICA } from '../../../../shared/constants/storage.constant';
+import { debounceTime } from 'rxjs/operators';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -61,6 +64,7 @@ export class CriarPagina implements AfterViewInit {
   fotos: FotoUpload[] = [];
   esconderSenha = true;
   shakeInput = false;
+  draftCriadoEm: string | null = null;
 
   musicaSelecionada: string | null = null;
   musicaPreview?: IYoutubeSugestao;
@@ -110,10 +114,11 @@ form!: FormGroup<{
     private fb: FormBuilder,
     private youtubeService: YoutubeService,
     private snackBar: MatSnackBar,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private storageService: StorageIndexedDbService
 ) {}
 
-ngOnInit() {
+async ngOnInit() {
   this.form = this.fb.group({
   nome1: this.fb.control('', {
     nonNullable: true,
@@ -201,7 +206,48 @@ ngOnInit() {
     });
 });
 
+    const draft = await this.storageService.get('draft');
+    if (draft) {
+      this.draftCriadoEm = draft.criadoEm;
 
+      const { dataEspecial, ...rest } = draft.dados;
+      this.form.patchValue({
+        ...rest,
+        dataEspecial: dataEspecial ? new Date(dataEspecial) : null
+      });
+
+      if (draft.fotos?.length) {
+        this.fotos = draft.fotos
+          .sort((a, b) => a.order - b.order)
+          .map(f => ({
+            file: f.file,
+            preview: URL.createObjectURL(f.file),
+            order: f.order
+          }));
+        setTimeout(() => {
+          this.checkOverflow();
+          this.cdr.detectChanges();
+        });
+      }
+
+      if (draft.musica) {
+        if (draft.musica.tipo === TIPO_MUSICA.MANUAL) {
+          this.videoManual = {
+            videoId: draft.musica.videoId,
+            titulo: draft.musica.titulo,
+            duracao: ''
+          };
+          this.musicaSelecionada = `https://www.youtube.com/watch?v=${draft.musica.videoId}`;
+        } else {
+          this.musicaSelecionada = draft.musica.url;
+        }
+        this.form.get('musica')?.setValue('', { emitEvent: false });
+      }
+    }
+
+    this.form.valueChanges
+      .pipe(debounceTime(500))
+      .subscribe(() => this.salvarDraft());
 }
 
   get f() {
@@ -233,12 +279,14 @@ ngOnDestroy() {
   setTimeout(() => {
     this.checkOverflow();
     this.cdr.detectChanges();
+    this.salvarDraft();
   }, 500);
 }
 
   drop(event: CdkDragDrop<FotoUpload[]>) {
     moveItemInArray(this.fotos, event.previousIndex, event.currentIndex);
     this.atualizarOrdem();
+    this.salvarDraft();
   }
 
 
@@ -249,6 +297,7 @@ ngOnDestroy() {
   setTimeout(() => {
     this.checkOverflow();
     this.cdr.detectChanges();
+    this.salvarDraft();
   }, 500);
 }
   private atualizarOrdem() {
@@ -351,6 +400,49 @@ ngOnDestroy() {
   console.log('Enviando...');
 }
 
+  async salvarDraft() {
+    const { musica: _musicaControl, dataEspecial, ...rest } = this.form.getRawValue();
+
+    const dados: DadosStorage = {
+      ...rest,
+      dataEspecial: dataEspecial ? dataEspecial.toISOString() : null,
+      plano: rest.plano as any
+    };
+
+    let musica: MusicaStorage | undefined;
+
+    if (this.videoManual) {
+      musica = {
+        tipo: TIPO_MUSICA.MANUAL,
+        videoId: this.videoManual.videoId,
+        titulo: this.videoManual.titulo
+      };
+    } else if (this.musicaSelecionada) {
+      musica = {
+        tipo: TIPO_MUSICA.SUGESTAO,
+        url: this.musicaSelecionada
+      };
+    }
+
+    const draft: CriarPaginaStorage = {
+      id: 'draft',
+      criadoEm: this.draftCriadoEm || new Date().toISOString(),
+      atualizadoEm: new Date().toISOString(),
+      dados,
+      musica,
+      fotos: this.fotos.map(f => ({
+        file: f.file,
+        order: f.order
+      }))
+    };
+
+    if (!this.draftCriadoEm) {
+      this.draftCriadoEm = draft.criadoEm;
+    }
+
+    await this.storageService.save(draft);
+  }
+
 onMusicaInput(event: Event) {
   const value = (event.target as HTMLInputElement).value;
   this.form.get('musica')?.setValue(value);
@@ -366,6 +458,7 @@ onVideoSelecionado(url: string | null) {
     // se desejar limpar o input, descomente abaixo
     // this.form.get('musica')?.setValue('');
   }
+  this.salvarDraft();
 }
 
 confirmarLinkExterno() {
