@@ -30,4 +30,63 @@ describe('CriarPagina', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should limit photos to 9 when adding more than 9', () => {
+    // Mock URL.createObjectURL
+    const originalCreateObjectURL = URL.createObjectURL;
+    URL.createObjectURL = (obj: any) => 'blob:mock';
+
+    try {
+      // Create mock files
+      const files: File[] = [];
+      for (let i = 0; i < 15; i++) {
+        files.push(new File([''], `photo${i}.jpg`, { type: 'image/jpeg' }));
+      }
+
+      // Mock the event
+      const mockEvent = {
+        target: {
+          files: files,
+          value: ''
+        }
+      } as unknown as Event;
+
+      // Call the method
+      component.onSelecionarFotos(mockEvent);
+
+      // Assert
+      expect(component.fotos.length).toBe(9);
+    } finally {
+      // Restore
+      URL.createObjectURL = originalCreateObjectURL;
+    }
+  });
+
+  it('should not add photos if limit of 9 is reached', () => {
+    // Mock existing photos
+    component.fotos = Array.from({ length: 9 }, (_, i) => ({
+      file: new File([''], `existing${i}.jpg`),
+      preview: `blob:existing${i}`,
+      order: i
+    }));
+
+    const originalCreateObjectURL = URL.createObjectURL;
+    URL.createObjectURL = (obj: any) => 'blob:mock';
+
+    try {
+      const files = [new File([''], 'new.jpg', { type: 'image/jpeg' })];
+      const mockEvent = {
+        target: {
+          files: files,
+          value: ''
+        }
+      } as unknown as Event;
+
+      component.onSelecionarFotos(mockEvent);
+
+      expect(component.fotos.length).toBe(9);
+    } finally {
+      URL.createObjectURL = originalCreateObjectURL;
+    }
+  });
 });
