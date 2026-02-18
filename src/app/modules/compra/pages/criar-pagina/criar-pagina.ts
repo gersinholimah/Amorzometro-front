@@ -24,6 +24,8 @@ import { StorageIndexedDbService } from '../../../../shared/service/storage-inde
 import { TIPO_MUSICA } from '../../../../shared/constants/storage.constant';
 import { debounceTime } from 'rxjs/operators';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ConfirmarCodigoComponent } from '../../../../shared/components/confirmar-codigo/confirmar-codigo.component';
 
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { NgxMaskDirective } from 'ngx-mask';
@@ -53,7 +55,8 @@ interface FotoUpload {
   SelectCodigoPaisComponent,
   MatSnackBarModule,
   MatButtonToggleModule,
-  NgxMaskDirective
+  NgxMaskDirective,
+  MatDialogModule
 ],
   templateUrl: './criar-pagina.html',
   styleUrl: './criar-pagina.css',
@@ -152,7 +155,8 @@ form!: FormGroup<{
     private youtubeService: YoutubeService,
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef,
-    private storageService: StorageIndexedDbService
+    private storageService: StorageIndexedDbService,
+    private dialog: MatDialog
 ) {}
 
 async ngOnInit() {
@@ -485,15 +489,26 @@ ngOnDestroy() {
   }
 
   // 🔥 se chegou aqui está válido
-  const formData = this.montarFormData();
-
-  Object.entries(this.form.value).forEach(([key, value]) => {
-    if (value !== null) {
-      formData.append(key, value as any);
-    }
+  const dialogRef = this.dialog.open(ConfirmarCodigoComponent, {
+    width: '400px',
+    disableClose: true
   });
 
-  console.log('Enviando...');
+  dialogRef.afterClosed().subscribe(code => {
+    if (code) {
+      console.log('Código validado:', code);
+
+      const formData = this.montarFormData();
+
+      Object.entries(this.form.value).forEach(([key, value]) => {
+        if (value !== null) {
+          formData.append(key, value as any);
+        }
+      });
+
+      console.log('Enviando...');
+    }
+  });
 }
 
   async salvarDraft() {

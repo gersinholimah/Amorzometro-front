@@ -4,6 +4,7 @@ import { CriarPagina } from './criar-pagina';
 import { StorageIndexedDbService } from '../../../../shared/service/storage-indexeddb.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideNgxMask } from 'ngx-mask';
+import { MatDialogModule } from '@angular/material/dialog';
 
 class MockStorageIndexedDbService {
   async get(id: string) { return undefined; }
@@ -16,7 +17,7 @@ describe('CriarPagina', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CriarPagina, BrowserAnimationsModule],
+      imports: [CriarPagina, BrowserAnimationsModule, MatDialogModule],
       providers: [
         { provide: StorageIndexedDbService, useClass: MockStorageIndexedDbService },
         provideNgxMask()
