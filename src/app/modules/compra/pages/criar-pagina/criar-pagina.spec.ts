@@ -33,6 +33,21 @@ describe('CriarPagina', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should update phone mask based on DDI', () => {
+    // Default is +55
+    expect(component.telefoneMask).toBe('(00) 0000-0000||(00) 00000-0000');
+
+    // Change to +1 (USA)
+    component.form.get('ddi')?.setValue('+1');
+    fixture.detectChanges();
+    expect(component.telefoneMask).toBe('0*');
+
+    // Change back to +55
+    component.form.get('ddi')?.setValue('+55');
+    fixture.detectChanges();
+    expect(component.telefoneMask).toBe('(00) 0000-0000||(00) 00000-0000');
+  });
+
   it('should limit photos to 9 when adding more than 9', () => {
     // Mock URL.createObjectURL
     const originalCreateObjectURL = URL.createObjectURL;

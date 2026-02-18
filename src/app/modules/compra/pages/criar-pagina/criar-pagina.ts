@@ -73,6 +73,7 @@ export class CriarPagina implements AfterViewInit {
   videoManual?: IYoutubeSugestao;
 
   datePickerControl = new FormControl<Date | null>(null);
+  telefoneMask = '(00) 0000-0000||(00) 00000-0000';
 
 form!: FormGroup<{
   nome1: FormControl<string>;
@@ -258,6 +259,23 @@ async ngOnInit() {
       } else if (!val) {
           this.datePickerControl.setValue(null, { emitEvent: false });
       }
+    });
+
+    this.form.get('ddi')?.valueChanges.subscribe(ddi => {
+      if (ddi === '+55') {
+        this.telefoneMask = '(00) 0000-0000||(00) 00000-0000';
+        this.form.get('telefone')?.setValidators([
+          Validators.required,
+          Validators.pattern(/^[0-9]{8,15}$/)
+        ]);
+      } else {
+        this.telefoneMask = '0*';
+        this.form.get('telefone')?.setValidators([
+          Validators.required,
+          Validators.pattern(/^[0-9]+$/)
+        ]);
+      }
+      this.form.get('telefone')?.updateValueAndValidity();
     });
 
     this.datePickerControl.valueChanges.subscribe(date => {

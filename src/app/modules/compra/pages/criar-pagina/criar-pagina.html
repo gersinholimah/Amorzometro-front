@@ -281,7 +281,7 @@
       <mat-form-field appearance="outline" class="full">
         <mat-label>Telefone</mat-label>
         <mat-icon matPrefix>phone</mat-icon>
-        <input matInput type="tel" formControlName="telefone" mask="(00) 0000-0000||(00) 00000-0000" />
+        <input matInput type="tel" formControlName="telefone" [mask]="telefoneMask" />
 
         <mat-error *ngIf="hasError('telefone','required')">
           Telefone é obrigatório
