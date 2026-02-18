@@ -267,7 +267,10 @@ ngOnDestroy() {
   const input = event.target as HTMLInputElement;
   if (!input.files) return;
 
-  Array.from(input.files).forEach(file => {
+  const remaining = 9 - this.fotos.length;
+  if (remaining <= 0) return;
+
+  Array.from(input.files).slice(0, remaining).forEach(file => {
     this.fotos.push({
       file,
       preview: URL.createObjectURL(file), // 🚀 instantâneo
