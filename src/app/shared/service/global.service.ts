@@ -10,7 +10,6 @@ import { STORAGE } from '../constants/storage.constant';
   providedIn: 'root',
 })
 export class GlobalService {
-  headerOptions = {};
 
     getDadosDaSessao(): IDadosDaSessao | null {
     const dadosDaSessaoEmString: string | null = this.getLocalStorage(
@@ -33,20 +32,5 @@ export class GlobalService {
 
 
 
-  defineOCabecalho() {
-    this.headerOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        Authorization: this.getAuthToken(),
-      }),
-    };
 
-    return this.headerOptions;
-  }
-  getAuthToken(): string {
-    const dadosDaSessao: IDadosDaSessao | null = this.getDadosDaSessao();
-    const token: string | undefined = dadosDaSessao?.token;
-    return token ? `Bearer ${token}` : '';
-  }
 }

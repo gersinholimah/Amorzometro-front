@@ -6,6 +6,7 @@ import { firstValueFrom } from 'rxjs';
 
   import { ILoginRequisicao } from '../interfaces/requisicao.interface';
 import { ILoginResposta } from '../interfaces/resposta.interface';
+import { AuthService } from '../../../../shared/service/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,13 +18,13 @@ export class ApiService {
   }
   constructor(
     private http: HttpClient,
-    private globalService: GlobalService,
+    private authService: AuthService,
   ) { }
 
   async setAutenticaUsuario(dadosParaAutenticacao: ILoginRequisicao): Promise<ILoginResposta> {
     const endpoint = this.endpoints.AutenticaUsuario();
     return firstValueFrom(
-      this.http.post<ILoginResposta>(endpoint, JSON.stringify(dadosParaAutenticacao), this.globalService.defineOCabecalho())
+      this.http.post<ILoginResposta>(endpoint, JSON.stringify(dadosParaAutenticacao), this.authService.defineOCabecalho())
     );
   }
 }
