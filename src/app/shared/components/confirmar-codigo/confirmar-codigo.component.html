@@ -1,0 +1,35 @@
+<h2 mat-dialog-title>Informe o código</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="otp-container">
+      <ng-container formArrayName="digits">
+        <input
+          *ngFor="let digit of digits.controls; let i = index"
+          [formControlName]="i"
+          #input
+          type="text"
+          class="otp-input"
+          maxlength="1"
+          (input)="onInput(i, $event)"
+          (keydown)="onKeyDown(i, $event)"
+          (paste)="onPaste($event)"
+        />
+      </ng-container>
+    </div>
+
+    <div class="error-container" *ngIf="hasError() || erroBackend">
+       <mat-error>Código inválido</mat-error>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancelar</button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="submit()"
+    [disabled]="form.invalid"
+  >
+    Validar código
+  </button>
+</mat-dialog-actions>
