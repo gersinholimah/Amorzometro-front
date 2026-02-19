@@ -29,6 +29,8 @@ import { ConfirmarCodigoComponent } from '../../../../shared/components/confirma
 
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { NgxMaskDirective } from 'ngx-mask';
+import { ApiService } from '../../@suport/apis/api.service';
+import { IAutenticaEmailResposta } from '../../@suport/interfaces/resposta.interface';
 
 interface FotoUpload {
   file: File;
@@ -140,6 +142,7 @@ form!: FormGroup<{
   }
 ];
 
+respostaAutenticaEmail: IAutenticaEmailResposta | null = null;
 
 @ViewChild('cardVamosComecar', { read: ElementRef }) cardVamosComecar!: ElementRef;
 @ViewChild('cardNossoDia', { read: ElementRef }) cardNossoDia!: ElementRef;
@@ -156,7 +159,8 @@ form!: FormGroup<{
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef,
     private storageService: StorageIndexedDbService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private apiService: ApiService
 ) {}
 
 async ngOnInit() {
@@ -442,11 +446,23 @@ ngOnDestroy() {
 }
 
 
-  submit() {
-
+ async submit() {
+  console.log('Form válido?', this.form.valid);
+  console.log('Fotos:', this.fotos.length);
   this.form.markAllAsTouched();
+const musicaValida = this.f.musica.valid || this.musicaSelecionada;
 
-  if (this.form.invalid || this.fotos.length === 0) {
+  if ( this.fotos.length === 0 ||
+  this.f.nome1.invalid ||
+  this.f.nome2.invalid ||
+  this.f.dataEspecial.invalid ||
+  !musicaValida ||
+  this.f.mensagem.invalid ||
+  this.f.plano.invalid ||
+  this.f.email.invalid ||
+  this.f.telefone.invalid ||
+  this.f.senha.invalid) {
+  // if (this.form.invalid || this.fotos.length === 0) {
 
     // ORDEM IMPORTA — top to bottom
 
@@ -488,13 +504,33 @@ ngOnDestroy() {
     return;
   }
 
-  // 🔥 se chegou aqui está válido
+  //  se chegou aqui está válido
   const dialogRef = this.dialog.open(ConfirmarCodigoComponent, {
     width: '400px',
     disableClose: true
   });
 
-  dialogRef.afterClosed().subscribe(code => {
+  dialogRef.afterClosed().subscribe( async code => {
+
+
+1
+
+ if (!code) return;
+
+ const email = this.f.email.value;
+await this.validaEmail(email)
+/*
+  this.authService.validarCodigo(code).subscribe({
+    next: () => {
+      dialogRef.close(true); // fecha só se válido
+    },
+    error: () => {
+      dialogRef.componentInstance.setErroBackend();
+    }
+  });*/
+
+
+
     if (code) {
       console.log('Código validado:', code);
 
@@ -508,8 +544,14 @@ ngOnDestroy() {
 
       console.log('Enviando...');
     }
+
+
+
   });
 }
+
+
+
 
   async salvarDraft() {
     const { musica: _musicaControl, dataEspecial, ...rest } = this.form.getRawValue();
@@ -626,5 +668,16 @@ const y = element.getBoundingClientRect().top + window.scrollY - headerHeight;
 
 
 
+async validaEmail(email: string) {
+   try {
+  this.respostaAutenticaEmail = await this.apiService.SetAutenticaEmail(email);
+  if (this.respostaAutenticaEmail) {
+   console.log('Resposta da API:', this.respostaAutenticaEmail);
+
+  }
+} catch (error) {
+
+ }
+}
 
 }
