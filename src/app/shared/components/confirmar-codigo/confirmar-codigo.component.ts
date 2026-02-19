@@ -23,6 +23,7 @@ import { MatInputModule } from '@angular/material/input';
 export class ConfirmarCodigoComponent implements OnInit {
   form: FormGroup;
   @ViewChildren('input') inputs!: QueryList<ElementRef>;
+erroBackend = false;
 
   constructor(
     private fb: FormBuilder,
@@ -83,4 +84,12 @@ export class ConfirmarCodigoComponent implements OnInit {
     const isInvalid = this.form.invalid;
     return isDirty && isInvalid;
   }
+  // Simula erro do backend remover talvez
+  setErroBackend() {
+  this.erroBackend = true;
+  this.form.reset();
+  setTimeout(() => {
+    this.inputs.first?.nativeElement.focus();
+  });
+}
 }

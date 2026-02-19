@@ -17,7 +17,7 @@
       </ng-container>
     </div>
 
-    <div class="error-container" *ngIf="hasError()">
+    <div class="error-container" *ngIf="hasError() || erroBackend">
        <mat-error>Código inválido</mat-error>
     </div>
   </form>
