@@ -32,6 +32,9 @@ import { NgxMaskDirective } from 'ngx-mask';
 import { ApiService } from '../../@suport/apis/api.service';
 // import { IAutenticaEmailResposta } from '../../@suport/interfaces/resposta.interface';
 import { AutenticarEmailRequisicao } from '../../@suport/interfaces/requisicao.interface';
+import { HttpErrorResponse } from '@angular/common/http';
+import { IAutenticaEmailErro } from '../../@suport/interfaces/resposta.interface';
+
 
 interface FotoUpload {
   file: File;
@@ -514,8 +517,27 @@ try {
 
   //  se chegou aqui está válido
 this.aposValidarEmail();
-} catch (error) {
- }
+} catch (error: unknown) {
+
+  if (error instanceof HttpErrorResponse) {
+
+    const apiErro = error.error as IAutenticaEmailErro;
+
+    // 👉 aqui você verifica se é erro esperado
+    if (apiErro.code === 1003) {
+      console.log('Token inválido:', apiErro.message);
+      return;
+    }
+
+    if (apiErro.code === 1002) {
+      console.log('Erros de validação:', apiErro.dados);
+      return;
+    }
+  }
+
+  // 👉 erro inesperado
+  console.error('Erro inesperado:', error);
+}
 
 }
 
