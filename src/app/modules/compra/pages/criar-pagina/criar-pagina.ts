@@ -30,7 +30,8 @@ import { ConfirmarCodigoComponent } from '../../../../shared/components/confirma
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { NgxMaskDirective } from 'ngx-mask';
 import { ApiService } from '../../@suport/apis/api.service';
-import { IAutenticaEmailResposta } from '../../@suport/interfaces/resposta.interface';
+// import { IAutenticaEmailResposta } from '../../@suport/interfaces/resposta.interface';
+import { AutenticarEmailRequisicao } from '../../@suport/interfaces/requisicao.interface';
 
 interface FotoUpload {
   file: File;
@@ -142,7 +143,7 @@ form!: FormGroup<{
   }
 ];
 
-respostaAutenticaEmail: IAutenticaEmailResposta | null = null;
+// respostaAutenticaEmail: IAutenticaEmailResposta | null = null;
 
 @ViewChild('cardVamosComecar', { read: ElementRef }) cardVamosComecar!: ElementRef;
 @ViewChild('cardNossoDia', { read: ElementRef }) cardNossoDia!: ElementRef;
@@ -503,8 +504,24 @@ const musicaValida = this.f.musica.valid || this.musicaSelecionada;
 
     return;
   }
+  const email = this.f.email.value;
+
+try {
+    const body: AutenticarEmailRequisicao = {
+       Email: email
+      };
+   await this.apiService.SetAutenticaEmail(body);
 
   //  se chegou aqui está válido
+this.aposValidarEmail();
+} catch (error) {
+ }
+
+}
+
+
+aposValidarEmail() {
+
   const dialogRef = this.dialog.open(ConfirmarCodigoComponent, {
     width: '400px',
     disableClose: true
@@ -512,46 +529,20 @@ const musicaValida = this.f.musica.valid || this.musicaSelecionada;
 
   dialogRef.afterClosed().subscribe( async code => {
 
-
-1
-
  if (!code) return;
-
- const email = this.f.email.value;
-await this.validaEmail(email)
-/*
-  this.authService.validarCodigo(code).subscribe({
-    next: () => {
-      dialogRef.close(true); // fecha só se válido
-    },
-    error: () => {
-      dialogRef.componentInstance.setErroBackend();
-    }
-  });*/
-
-
-
     if (code) {
       console.log('Código validado:', code);
-
       const formData = this.montarFormData();
-
       Object.entries(this.form.value).forEach(([key, value]) => {
         if (value !== null) {
           formData.append(key, value as any);
         }
       });
-
       console.log('Enviando...');
     }
-
-
-
   });
+
 }
-
-
-
 
   async salvarDraft() {
     const { musica: _musicaControl, dataEspecial, ...rest } = this.form.getRawValue();
@@ -666,18 +657,5 @@ const y = element.getBoundingClientRect().top + window.scrollY - headerHeight;
   });
 }
 
-
-
-async validaEmail(email: string) {
-   try {
-  this.respostaAutenticaEmail = await this.apiService.SetAutenticaEmail(email);
-  if (this.respostaAutenticaEmail) {
-   console.log('Resposta da API:', this.respostaAutenticaEmail);
-
-  }
-} catch (error) {
-
- }
-}
 
 }

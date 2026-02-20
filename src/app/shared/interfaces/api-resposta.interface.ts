@@ -1,9 +1,9 @@
-export interface IApiResposta<TItem> {
+/*export interface IApiResposta<TItem> {
   items: TItem[];
   isOk: boolean;
   messages: IMessageApiResposta[];
   // pages: IPaginationApiResposta[];
-}
+}*/
 
 export interface IMessageApiResposta {
   messageId: string;

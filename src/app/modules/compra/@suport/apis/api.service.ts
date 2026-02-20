@@ -4,8 +4,9 @@ import { environment } from '../../../../../environments/environment';
 import { GlobalService } from '../../../../shared/service/global.service';
 import { firstValueFrom } from 'rxjs';
 /**/
-import { IAutenticaEmailResposta } from './../interfaces/resposta.interface';
+// import { IAutenticaEmailResposta } from './../interfaces/resposta.interface';
  import { AuthService } from '../../../../shared/service/auth.service';
+import { AutenticarEmailRequisicao } from '../interfaces/requisicao.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -22,10 +23,10 @@ export class ApiService {
   ) { }
 
 
-  async SetAutenticaEmail(email: string): Promise<IAutenticaEmailResposta> {
+  async SetAutenticaEmail(email: AutenticarEmailRequisicao): Promise<string> {
     const endpoint = this.endpoints.AutenticaUsuario();
     return firstValueFrom(
-      this.http.post<IAutenticaEmailResposta>(endpoint, JSON.stringify(email), this.authService.defineOCabecalho())
+      this.http.post<string>(endpoint, email, this.authService.defineOCabecalho())
     );
   }
 
