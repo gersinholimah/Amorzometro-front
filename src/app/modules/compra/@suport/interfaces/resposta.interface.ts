@@ -1,5 +1,5 @@
-  import { IApiErro } from '../../../../shared/interfaces/api-resposta.interface';
+// import { IApiResposta } from '../../../../shared/interfaces/api-resposta.interface';
 
-  export interface IAutenticaEmailErro extends IApiErro<string[]> {}
+// export interface IAutenticaEmailResposta extends IApiResposta<[]> {}
 
 

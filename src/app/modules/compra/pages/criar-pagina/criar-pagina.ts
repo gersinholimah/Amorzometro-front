@@ -32,9 +32,7 @@ import { NgxMaskDirective } from 'ngx-mask';
 import { ApiService } from '../../@suport/apis/api.service';
 // import { IAutenticaEmailResposta } from '../../@suport/interfaces/resposta.interface';
 import { AutenticarEmailRequisicao } from '../../@suport/interfaces/requisicao.interface';
-import { HttpErrorResponse } from '@angular/common/http';
-import { IAutenticaEmailErro } from '../../@suport/interfaces/resposta.interface';
-
+import { ModalComponent } from '../../../../shared/components/modal/modal.component';
 
 interface FotoUpload {
   file: File;
@@ -62,7 +60,8 @@ interface FotoUpload {
   MatSnackBarModule,
   MatButtonToggleModule,
   NgxMaskDirective,
-  MatDialogModule
+  MatDialogModule,
+  ModalComponent
 ],
   templateUrl: './criar-pagina.html',
   styleUrl: './criar-pagina.css',
@@ -80,6 +79,13 @@ export class CriarPagina implements AfterViewInit {
   musicaSelecionada: string | null = null;
   musicaPreview?: IYoutubeSugestao;
   videoManual?: IYoutubeSugestao;
+
+  // Modal configuration
+  modalVisible = false;
+  modalTitle = '';
+  modalSubtitle = '';
+  modalDescription = '';
+  modalType: 'success' | 'error' | 'warning' = 'success';
 
   datePickerControl = new FormControl<Date | null>(null);
   telefoneMask = '(00) 0000-0000||(00) 00000-0000';
@@ -517,28 +523,18 @@ try {
 
   //  se chegou aqui está válido
 this.aposValidarEmail();
-} catch (error: unknown) {
+} catch (error: any) {
+  this.modalTitle = 'Ops!';
+  this.modalSubtitle = 'Erro ao autenticar e-mail';
+  this.modalDescription = error?.error?.message || 'Ocorreu um erro inesperado. Tente novamente mais tarde.';
+  this.modalType = 'error';
+  this.modalVisible = true;
+ }
 
-  if (error instanceof HttpErrorResponse) {
-
-    const apiErro = error.error as IAutenticaEmailErro;
-
-    // 👉 aqui você verifica se é erro esperado
-    if (apiErro.code === 1003) {
-      console.log('Token inválido:', apiErro.message);
-      return;
-    }
-
-    if (apiErro.code === 1002) {
-      console.log('Erros de validação:', apiErro.dados);
-      return;
-    }
-  }
-
-  // 👉 erro inesperado
-  console.error('Erro inesperado:', error);
 }
 
+onModalClose() {
+  this.modalVisible = false;
 }
 
 

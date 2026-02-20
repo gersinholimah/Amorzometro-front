@@ -1,10 +1,9 @@
- export interface IApiErro<TItem> {
-  code: number;
-  message: string;
-  dados: TItem[];
-  traceId?: string;
-  timestamp?: string;
-}
+/*export interface IApiResposta<TItem> {
+  items: TItem[];
+  isOk: boolean;
+  messages: IMessageApiResposta[];
+  // pages: IPaginationApiResposta[];
+}*/
 
 export interface IMessageApiResposta {
   messageId: string;
