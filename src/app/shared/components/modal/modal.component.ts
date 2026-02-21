@@ -1,89 +1,78 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+
+export interface ModalData {
+  title?: string;
+  subtitle?: string;
+  description?: string;
+  type?: 'success' | 'error' | 'warning';
+  showCancelButton?: boolean;
+  showConfirmButton?: boolean;
+  showOkButton?: boolean;
+  showCloseIcon?: boolean;
+}
 
 @Component({
   selector: 'app-modal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatDialogModule],
   template: `
-    <div class="modal-backdrop" (click)="onBackdropClick($event)">
-      <div class="modal-container">
-        <div class="modal-header">
-          <button *ngIf="showCloseIcon" class="close-btn" (click)="onClose()" aria-label="Close">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
+    <div class="modal-container">
+      <div class="modal-header">
+        <button *ngIf="data.showCloseIcon !== false" class="close-btn" (click)="onClose()" aria-label="Close">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="icon-container" [ngClass]="data.type || 'success'">
+          <!-- Success Icon -->
+          <svg *ngIf="(data.type || 'success') === 'success'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="status-icon success">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+
+          <!-- Error Icon -->
+          <svg *ngIf="data.type === 'error'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="status-icon error">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+          </svg>
+
+          <!-- Warning Icon -->
+          <svg *ngIf="data.type === 'warning'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="status-icon warning">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
         </div>
 
-        <div class="modal-body">
-          <div class="icon-container" [ngClass]="type">
-            <!-- Success Icon -->
-            <svg *ngIf="type === 'success'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="status-icon success">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-              <polyline points="22 4 12 14.01 9 11.01"></polyline>
-            </svg>
+        <h2 *ngIf="data.title" class="modal-title">{{ data.title }}</h2>
+        <h3 *ngIf="data.subtitle" class="modal-subtitle">{{ data.subtitle }}</h3>
+        <p *ngIf="data.description" class="modal-description">{{ data.description }}</p>
+      </div>
 
-            <!-- Error Icon -->
-            <svg *ngIf="type === 'error'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="status-icon error">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="15" y1="9" x2="9" y2="15"></line>
-              <line x1="9" y1="9" x2="15" y2="15"></line>
-            </svg>
-
-            <!-- Warning Icon -->
-            <svg *ngIf="type === 'warning'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="status-icon warning">
-              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-              <line x1="12" y1="9" x2="12" y2="13"></line>
-              <line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
-          </div>
-
-          <h2 *ngIf="title" class="modal-title">{{ title }}</h2>
-          <h3 *ngIf="subtitle" class="modal-subtitle">{{ subtitle }}</h3>
-          <p *ngIf="description" class="modal-description">{{ description }}</p>
-        </div>
-
-        <div class="modal-footer">
-          <button *ngIf="showCancelButton" class="btn btn-cancel" (click)="onCancel()">Cancelar</button>
-          <button *ngIf="showConfirmButton" class="btn btn-confirm" (click)="onConfirm()">Confirmar</button>
-          <button *ngIf="showOkButton" class="btn btn-ok" (click)="onOk()">OK</button>
-        </div>
+      <div class="modal-footer">
+        <button *ngIf="data.showCancelButton" class="btn btn-cancel" (click)="onCancel()">Cancelar</button>
+        <button *ngIf="data.showConfirmButton" class="btn btn-confirm" (click)="onConfirm()">Confirmar</button>
+        <button *ngIf="data.showOkButton" class="btn btn-ok" (click)="onOk()">OK</button>
       </div>
     </div>
   `,
   styles: [`
-    .modal-backdrop {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-      backdrop-filter: blur(2px);
-    }
-
     .modal-container {
       background: #ffffff;
       padding: 24px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-      width: 90%;
-      max-width: 450px;
+      /* Border radius is usually handled by MatDialog config, but we can keep inner styling */
       display: flex;
       flex-direction: column;
       position: relative;
-      animation: fadeIn 0.2s ease-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
+      /* Max width is handled by MatDialog config usually, but we can ensure internal layout */
+      max-width: 100%;
     }
 
     .modal-header {
@@ -196,37 +185,24 @@ import { CommonModule } from '@angular/common';
   `]
 })
 export class ModalComponent {
-  @Input() title: string = '';
-  @Input() subtitle: string = '';
-  @Input() description: string = '';
-  @Input() type: 'success' | 'error' | 'warning' = 'success';
-  @Input() showCancelButton: boolean = true;
-  @Input() showConfirmButton: boolean = true;
-  @Input() showOkButton: boolean = false;
-  @Input() showCloseIcon: boolean = true;
-
-  @Output() confirm = new EventEmitter<boolean>();
-  @Output() close = new EventEmitter<void>();
+  constructor(
+    public dialogRef: MatDialogRef<ModalComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: ModalData
+  ) {}
 
   onConfirm(): void {
-    this.confirm.emit(true);
+    this.dialogRef.close(true);
   }
 
   onCancel(): void {
-    this.confirm.emit(false);
+    this.dialogRef.close(false);
   }
 
   onOk(): void {
-    this.close.emit();
+    this.dialogRef.close();
   }
 
   onClose(): void {
-    this.close.emit();
-  }
-
-  onBackdropClick(event: MouseEvent): void {
-    if ((event.target as HTMLElement).classList.contains('modal-backdrop')) {
-      this.close.emit();
-    }
+    this.dialogRef.close();
   }
 }

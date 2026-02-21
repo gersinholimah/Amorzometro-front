@@ -32,7 +32,7 @@ import { NgxMaskDirective } from 'ngx-mask';
 import { ApiService } from '../../@suport/apis/api.service';
 // import { IAutenticaEmailResposta } from '../../@suport/interfaces/resposta.interface';
 import { AutenticarEmailRequisicao } from '../../@suport/interfaces/requisicao.interface';
-import { ModalComponent } from '../../../../shared/components/modal/modal.component';
+import { ModalComponent, ModalData } from '../../../../shared/components/modal/modal.component';
 
 interface FotoUpload {
   file: File;
@@ -79,13 +79,6 @@ export class CriarPagina implements AfterViewInit {
   musicaSelecionada: string | null = null;
   musicaPreview?: IYoutubeSugestao;
   videoManual?: IYoutubeSugestao;
-
-  // Modal configuration
-  modalVisible = false;
-  modalTitle = '';
-  modalSubtitle = '';
-  modalDescription = '';
-  modalType: 'success' | 'error' | 'warning' = 'success';
 
   datePickerControl = new FormControl<Date | null>(null);
   telefoneMask = '(00) 0000-0000||(00) 00000-0000';
@@ -169,7 +162,7 @@ form!: FormGroup<{
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef,
     private storageService: StorageIndexedDbService,
-    private dialog: MatDialog,
+    public dialog: MatDialog,
     private apiService: ApiService
 ) {}
 
@@ -524,17 +517,22 @@ try {
   //  se chegou aqui está válido
 this.aposValidarEmail();
 } catch (error: any) {
-  this.modalTitle = 'Ops!';
-  this.modalSubtitle = 'Erro ao autenticar e-mail';
-  this.modalDescription = error?.error?.message || 'Ocorreu um erro inesperado. Tente novamente mais tarde.';
-  this.modalType = 'error';
-  this.modalVisible = true;
+  const data: ModalData = {
+    title: 'Ops!',
+    subtitle: 'Erro ao autenticar e-mail',
+    description: error?.error?.message || 'Ocorreu um erro inesperado. Tente novamente mais tarde.',
+    type: 'error',
+    showOkButton: true,
+    showCancelButton: false,
+    showConfirmButton: false
+  };
+
+  this.dialog.open(ModalComponent, {
+    width: '400px',
+    data: data
+  });
  }
 
-}
-
-onModalClose() {
-  this.modalVisible = false;
 }
 
 

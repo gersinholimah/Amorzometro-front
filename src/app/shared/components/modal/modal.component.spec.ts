@@ -1,35 +1,47 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ModalComponent } from './modal.component';
+import { ModalComponent, ModalData } from './modal.component';
 import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { CommonModule } from '@angular/common';
 
 describe('ModalComponent', () => {
   let component: ModalComponent;
   let fixture: ComponentFixture<ModalComponent>;
+  let dialogRefSpy: { close: any };
+
+  const mockData: ModalData = {
+    title: 'Test Title',
+    subtitle: 'Test Subtitle',
+    description: 'Test Description',
+    type: 'success',
+    showCancelButton: true,
+    showConfirmButton: true,
+    showOkButton: true,
+    showCloseIcon: true
+  };
 
   beforeEach(async () => {
+    dialogRefSpy = { close: vi.fn() };
+
     await TestBed.configureTestingModule({
-      imports: [ModalComponent]
-    })
-    .compileComponents();
+      imports: [ModalComponent, MatDialogModule, CommonModule],
+      providers: [
+        { provide: MatDialogRef, useValue: dialogRefSpy },
+        { provide: MAT_DIALOG_DATA, useValue: mockData }
+      ]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ModalComponent);
     component = fixture.componentInstance;
-    // We do NOT call fixture.detectChanges() here to avoid initial rendering
-    // preventing ExpressionChangedAfterItHasBeenCheckedError when we set inputs immediately in tests.
+    fixture.detectChanges();
   });
 
   it('should create', () => {
-    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
-  it('should display title, subtitle, and description', () => {
-    component.title = 'Test Title';
-    component.subtitle = 'Test Subtitle';
-    component.description = 'Test Description';
-    fixture.detectChanges();
-
+  it('should display title, subtitle, and description from data', () => {
     const titleEl = fixture.debugElement.query(By.css('.modal-title')).nativeElement;
     const subtitleEl = fixture.debugElement.query(By.css('.modal-subtitle')).nativeElement;
     const descEl = fixture.debugElement.query(By.css('.modal-description')).nativeElement;
@@ -39,91 +51,32 @@ describe('ModalComponent', () => {
     expect(descEl.textContent).toContain('Test Description');
   });
 
-  it('should emit confirm(true) when confirm button is clicked', () => {
-    component.showConfirmButton = true;
-    fixture.detectChanges();
-
-    const spy = vi.spyOn(component.confirm, 'emit');
-
+  it('should call dialogRef.close(true) when confirm button is clicked', () => {
     const confirmBtn = fixture.debugElement.query(By.css('.btn-confirm'));
     confirmBtn.nativeElement.click();
-
-    expect(spy).toHaveBeenCalledWith(true);
+    expect(dialogRefSpy.close).toHaveBeenCalledWith(true);
   });
 
-  it('should emit confirm(false) when cancel button is clicked', () => {
-    component.showCancelButton = true;
-    fixture.detectChanges();
-
-    const spy = vi.spyOn(component.confirm, 'emit');
-
+  it('should call dialogRef.close(false) when cancel button is clicked', () => {
     const cancelBtn = fixture.debugElement.query(By.css('.btn-cancel'));
     cancelBtn.nativeElement.click();
-
-    expect(spy).toHaveBeenCalledWith(false);
+    expect(dialogRefSpy.close).toHaveBeenCalledWith(false);
   });
 
-  it('should emit close() when ok button is clicked', () => {
-    component.showOkButton = true;
-    fixture.detectChanges();
-
-    const spy = vi.spyOn(component.close, 'emit');
-
+  it('should call dialogRef.close() when ok button is clicked', () => {
     const okBtn = fixture.debugElement.query(By.css('.btn-ok'));
     okBtn.nativeElement.click();
-
-    expect(spy).toHaveBeenCalled();
+    expect(dialogRefSpy.close).toHaveBeenCalled();
   });
 
-  it('should emit close() when close icon is clicked', () => {
-    component.showCloseIcon = true;
-    fixture.detectChanges();
-
-    const spy = vi.spyOn(component.close, 'emit');
-
+  it('should call dialogRef.close() when close icon is clicked', () => {
     const closeBtn = fixture.debugElement.query(By.css('.close-btn'));
     closeBtn.nativeElement.click();
-
-    expect(spy).toHaveBeenCalled();
-  });
-
-  it('should emit close() when backdrop is clicked', () => {
-    fixture.detectChanges();
-
-    const spy = vi.spyOn(component.close, 'emit');
-
-    const backdrop = fixture.debugElement.query(By.css('.modal-backdrop'));
-
-    // Simulate click on backdrop
-    backdrop.nativeElement.click();
-
-    expect(spy).toHaveBeenCalled();
-  });
-
-  it('should NOT emit close() when modal container is clicked', () => {
-    fixture.detectChanges();
-
-    const spy = vi.spyOn(component.close, 'emit');
-
-    const container = fixture.debugElement.query(By.css('.modal-container'));
-
-    // Simulate click on container
-    container.nativeElement.click();
-
-    expect(spy).not.toHaveBeenCalled();
+    expect(dialogRefSpy.close).toHaveBeenCalled();
   });
 
   it('should show correct icon for success type', () => {
-    component.type = 'success';
-    fixture.detectChanges();
     const icon = fixture.debugElement.query(By.css('.status-icon.success'));
-    expect(icon).toBeTruthy();
-  });
-
-  it('should show correct icon for error type', () => {
-    component.type = 'error';
-    fixture.detectChanges();
-    const icon = fixture.debugElement.query(By.css('.status-icon.error'));
     expect(icon).toBeTruthy();
   });
 });

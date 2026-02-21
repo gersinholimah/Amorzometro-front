@@ -336,15 +336,3 @@
   </button>
 </div>
 </form>
-
-<app-modal
-  *ngIf="modalVisible"
-  [title]="modalTitle"
-  [subtitle]="modalSubtitle"
-  [description]="modalDescription"
-  [type]="modalType"
-  [showConfirmButton]="false"
-  [showCancelButton]="false"
-  [showOkButton]="true"
-  (close)="onModalClose()"
-></app-modal>
