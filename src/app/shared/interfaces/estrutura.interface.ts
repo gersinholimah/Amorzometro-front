@@ -2,20 +2,21 @@ import { Role } from '../constants/routes.constant';
 import { Plano, TIPO_MUSICA,  } from '../constants/storage.constant';
 
 export interface IDadosDaSessao {
-  milissegundos: string;
-  segundos: string;
-  minutos: string;
-  hora: string;
-  data: string;
-  ano: string;
-  mes: string;
-  dia: string;
-  role: Role;
-  nome: string;
-  matricula: string;
-  token: string;
-  cpf: string;
-  ultimaInteracao: string;
+  milissegundos?: string;
+  segundos?: string;
+  minutos?: string;
+  hora?: string;
+  data?: string;
+  ano?: string;
+  mes?: string;
+  dia?: string;
+  role: string; //Role;
+  nome?: string;
+  matricula?: string;
+  tokenAutenticacao?: string;
+  tokenValidacao?: string;
+  cpf?: string;
+  ultimaInteracao?: string;
 }
 
 

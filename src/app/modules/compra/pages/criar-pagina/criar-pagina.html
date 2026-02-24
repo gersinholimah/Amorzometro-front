@@ -271,6 +271,9 @@
       <mat-error *ngIf="hasError('email','email')">
         Email inválido
       </mat-error>
+<mat-error *ngIf="f.email.errors?.['emailJaCadastrado']">
+    {{ mensagemEmailErro }}
+  </mat-error>
     </mat-form-field>
 
     <div style="display: flex; gap: 8px;">

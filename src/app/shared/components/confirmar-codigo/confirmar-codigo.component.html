@@ -17,9 +17,10 @@
       </ng-container>
     </div>
 
-    <div class="error-container" *ngIf="hasError() || erroBackend">
-       <mat-error>Código inválido</mat-error>
+    <div class="error-container" *ngIf="hasError() || erroBackend || erro">
+       <mat-error>{{erro ? "Código incorreto" : "Código inválido" }}</mat-error>
     </div>
+
   </form>
 </mat-dialog-content>
 <mat-dialog-actions align="end">

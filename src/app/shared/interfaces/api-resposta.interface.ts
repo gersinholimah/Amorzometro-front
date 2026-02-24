@@ -1,18 +1,11 @@
-/*export interface IApiResposta<TItem> {
-  items: TItem[];
-  isOk: boolean;
-  messages: IMessageApiResposta[];
-  // pages: IPaginationApiResposta[];
-}*/
+export interface IErroGenerico extends IApiErro<string[]> {}
 
-export interface IMessageApiResposta {
-  messageId: string;
-  objectId: string;
-  type: number;
+export interface IApiErro<TItem> {
+  code: number;
   message: string;
-  messageUs: string;
-  lastUpdate: string;
-  showBadge: boolean;
+  data: TItem;
+  traceId?: string;
+  timestamp?: string;
 }
 export interface IPaginationApiResposta {
   totalItems: number;

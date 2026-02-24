@@ -4,7 +4,7 @@ import { CriarPaginaStorage } from '../interfaces/estrutura.interface';
 @Injectable({
   providedIn: 'root',
 })
-export class StorageIndexedDbService {
+export class IndexedDbStorageService {
   private readonly DB_NAME = 'app-db';
   private readonly DB_VERSION = 1;
   private readonly STORE_NAME = 'criar-pagina';
