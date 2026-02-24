@@ -2,6 +2,7 @@ import { GlobalService } from './global.service';
 import { Injectable } from '@angular/core';
 import { HttpHeaders } from '@angular/common/http';
 import { IDadosDaSessao } from '../interfaces/estrutura.interface';
+import { LocalStorageService } from './local-storage.service';
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +13,7 @@ export class AuthService {
 
   constructor(
     private globalService: GlobalService,
+    private localStorageService: LocalStorageService,
   ) { }
 
 
@@ -27,8 +29,8 @@ export class AuthService {
     return this.headerOptions;
   }
   getAuthToken(): string {
-    const dadosDaSessao: IDadosDaSessao | null = this.globalService.getDadosDaSessao();
-    const token: string | undefined = dadosDaSessao?.token;
+    const dadosDaSessao: IDadosDaSessao | null = this.localStorageService.getDadosDaSessao();
+    const token: string | undefined = dadosDaSessao?.tokenAutenticacao;
     return token ? `Bearer ${token}` : '';
   }
 }

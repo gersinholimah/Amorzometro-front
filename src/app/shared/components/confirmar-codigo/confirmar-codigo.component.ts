@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnInit, Output, QueryList, ViewChildren } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -24,6 +24,8 @@ export class ConfirmarCodigoComponent implements OnInit {
   form: FormGroup;
   @ViewChildren('input') inputs!: QueryList<ElementRef>;
 erroBackend = false;
+erro: string | null = null;
+@Output() codigoConfirmado = new EventEmitter<string>();
 
   constructor(
     private fb: FormBuilder,
@@ -73,10 +75,10 @@ erroBackend = false;
   }
 
   submit() {
-    if (this.form.valid) {
-      const code = this.digits.value.join('');
-      this.dialogRef.close(code);
-    }
+  if (this.form.invalid) return;
+
+  const code = this.digits.value.join('');
+  this.codigoConfirmado.emit(code);
   }
 
   hasError(): boolean {
