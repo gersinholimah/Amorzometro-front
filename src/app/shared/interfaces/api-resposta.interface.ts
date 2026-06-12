@@ -1,4 +1,4 @@
-export interface IErroGenerico extends IApiErro<string[]> {}
+export interface IErroGenerico extends IApiErro<any> {}
 
 export interface IApiErro<TItem> {
   code: number;

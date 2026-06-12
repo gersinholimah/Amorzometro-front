@@ -20,7 +20,7 @@ export class AuthService {
   defineOCabecalho() {
    this.headerOptions = {
       headers: new HttpHeaders({
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json',//talvez precise ter o generico pra formdata o navegador definir automaticamente
         Accept: 'application/json',
         Authorization: this.getAuthToken(),
       }),

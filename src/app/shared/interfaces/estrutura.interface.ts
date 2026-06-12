@@ -14,9 +14,10 @@ export interface IDadosDaSessao {
   nome?: string;
   matricula?: string;
   tokenAutenticacao?: string;
-  tokenValidacao?: string;
+  codigoValidacaoEmail?: string;
   cpf?: string;
   ultimaInteracao?: string;
+  codigoValidacaoEmailTime?:string;
 }
 
 

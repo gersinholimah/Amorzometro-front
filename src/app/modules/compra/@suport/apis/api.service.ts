@@ -7,7 +7,7 @@ import { firstValueFrom } from 'rxjs';
 // import { IAutenticaEmailResposta } from './../interfaces/resposta.interface';
  import { AuthService } from '../../../../shared/service/auth.service';
 import { IAutenticarEmailRequisicao, IRegistrarUsuarioRequisicao } from '../interfaces/requisicao.interface';
-import { IRegistraUsuarioResposta } from '../interfaces/resposta.interface';
+import { ICriarPedidoResposta/*, ICriarRascunhoRequsicao*/, ICriarRascunhoResposta, IRegistraUsuarioResposta } from '../interfaces/resposta.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +18,10 @@ export class ApiService {
       `${environment.api_url}/api/v1/autenticacao/autenticar-email`,
     RegistrarUsuario:  ()=>
       `${environment.api_url}/api/v1/usuario/registrar`,
+    CriarPedido:  (planoId: number)=>
+      `${environment.api_url}/api/v1/pedido/${planoId}`,
+    CriarRascunho:  ()=>
+      `${environment.api_url}/api/v1/rascunho/criar`,
 
   }
   constructor(
@@ -37,6 +41,20 @@ export class ApiService {
     const endpoint = this.endpoints.RegistrarUsuario();
     return firstValueFrom(
       this.http.post<IRegistraUsuarioResposta>(endpoint, usuario, this.authService.defineOCabecalho())
+    );
+  }
+
+    async postCriarPedido(planoId: number): Promise<ICriarPedidoResposta> {
+    const endpoint = this.endpoints.CriarPedido(planoId);
+    return firstValueFrom(
+      this.http.post<ICriarPedidoResposta>(endpoint, planoId, this.authService.defineOCabecalho())
+    );
+  }
+
+  async postCriarRascunho(formData: FormData): Promise<ICriarRascunhoResposta> {
+    const endpoint = this.endpoints.CriarRascunho();
+    return firstValueFrom(
+      this.http.post<ICriarRascunhoResposta>(endpoint, formData, this.authService.defineOCabecalho())
     );
   }
 

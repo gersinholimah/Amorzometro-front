@@ -5,9 +5,11 @@ export const STORAGE = {
 
 
 export const PLANO = {
-  ETERNO: 'eterno',
-  ANUAL: 'anual',
-  MENSAL: 'mensal'
+  GRATUITO: 'gratuito',
+  BASICO: 'basico',
+  INTERMEDIARO: 'intermediario',
+  PREMIO: 'premio'
+
 } as const;
 export type Plano = typeof PLANO[keyof typeof PLANO];
 

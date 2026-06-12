@@ -199,9 +199,10 @@
     <!-- ETERNO -->
     <div
       class="plan-card"
-      [class.selected]="f.plano.value === 'eterno'"
-      (click)="form.get('plano')?.setValue('eterno')"
+      [class.selected]="f.plano.value === 'premio'"
+      (click)="form.get('plano')?.setValue('premio')"
     >
+
 
       <div class="badge">Melhor opção</div>
 
@@ -215,7 +216,7 @@
 
       <small>no PIX</small>
 
-      <div class="check" *ngIf="f.plano.value === 'eterno'">
+      <div class="check" *ngIf="f.plano.value === 'premio'">
         <mat-icon>check</mat-icon>
       </div>
     </div>
@@ -224,8 +225,8 @@
 
        <div
       class="plan-card"
-      [class.selected]="f.plano.value === 'anual'"
-      (click)="form.get('plano')?.setValue('anual')"
+      [class.selected]="f.plano.value === 'intermediario'"
+      (click)="form.get('plano')?.setValue('intermediario')"
     >
 
 
@@ -238,7 +239,7 @@
 
       <small>no PIX</small>
 
-      <div class="check" *ngIf="f.plano.value === 'anual'">
+      <div class="check" *ngIf="f.plano.value === 'intermediario'">
         <mat-icon>check</mat-icon>
       </div>
     </div>

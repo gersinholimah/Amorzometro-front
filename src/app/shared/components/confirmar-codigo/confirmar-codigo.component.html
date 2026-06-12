@@ -17,20 +17,39 @@
       </ng-container>
     </div>
 
-    <div class="error-container" *ngIf="hasError() || erroBackend || erro">
+    <div class="error-container" *ngIf="hasError() && !tempoExpirado || erroBackend && !tempoExpirado || erro && !tempoExpirado">
        <mat-error>{{erro ? "Código incorreto" : "Código inválido" }}</mat-error>
     </div>
+<div class="contador" *ngIf="!tempoExpirado">
+  Código expira em: {{ contadorFormatado }}
+</div>
 
+<div class="contador-expirado" *ngIf="tempoExpirado">
+  Código expirado
+</div>
   </form>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-button mat-dialog-close>Cancelar</button>
+
+  <!-- VALIDAR -->
   <button
+    *ngIf="!tempoExpirado"
     mat-raised-button
     color="primary"
     (click)="submit()"
     [disabled]="form.invalid"
   >
     Validar código
+  </button>
+
+  <!-- REENVIAR -->
+  <button
+    *ngIf="tempoExpirado"
+    mat-raised-button
+    color="warn"
+    (click)="reenviarCodigo()"
+  >
+    Reenviar código
   </button>
 </mat-dialog-actions>

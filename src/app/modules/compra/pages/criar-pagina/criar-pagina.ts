@@ -64,6 +64,7 @@ import { ApiService } from "../../@suport/apis/api.service";
 // import { IAutenticaEmailResposta, IAutenticaEmailErro, IGenericoErro } from '../../@suport/interfaces/resposta.interface';
 import {
   IAutenticarEmailRequisicao,
+  ICriarRascunhoRequsicao,
   IRegistrarUsuarioRequisicao,
 } from "../../@suport/interfaces/requisicao.interface";
 import {
@@ -71,7 +72,7 @@ import {
   ModalData,
 } from "../../../../shared/components/modal/modal.component";
 import { HttpErrorResponse } from "@angular/common/http";
-import { IRegistraUsuarioResposta } from "../../@suport/interfaces/resposta.interface";
+import { ICriarPedidoResposta, ICriarRascunhoResposta, IRegistraUsuarioResposta } from "../../@suport/interfaces/resposta.interface";
 import { IErroGenerico } from "./../../../../shared/interfaces/api-resposta.interface";
 import {
   TIPO_ALERTA,
@@ -85,6 +86,7 @@ import {
 
 import { Router } from "@angular/router";
 import { MODAL_RESPOSTA } from "../../../../shared/constants/respostas-modal-constant";
+import { CODIGO_OTA } from "../../../../shared/constants/respostas-ota.constant";
 
 interface FotoUpload {
   file: File;
@@ -122,7 +124,7 @@ export class CriarPagina implements AfterViewInit {
   statusHttp: number = 0;
   showScrollButtons = false;
   tipoAlerta: string = "";
-
+  reAutenticarEmail: boolean = false;
   fotos: FotoUpload[] = [];
   esconderSenha = true;
   shakeInput = false;
@@ -135,14 +137,14 @@ export class CriarPagina implements AfterViewInit {
   telefoneMask = "(00) 0000-0000||(00) 00000-0000";
   mensagemErro: string = "";
   mensagemEmailErro: string = "";
+  planoSelecionado!: number;
   form!: FormGroup<{
     nome1: FormControl<string>;
     nome2: FormControl<string>;
     dataEspecial: FormControl<string | null>;
     musica: FormControl<string>;
     mensagem: FormControl<string>;
-    plano: FormControl<"eterno" | "anual" | "mensal" | "">; // ✅ corrigido
-    // plano: ['mensal', Validators.required]
+    plano: FormControl<"gratuito" | "basico" | "intermediario" | "premio" | "">; // ✅ corrigido
 
     email: FormControl<string>;
     senha: FormControl<string>;
@@ -168,27 +170,34 @@ export class CriarPagina implements AfterViewInit {
       duracao: "04:31",
     },
   ];
-
   planos = [
     {
-      id: "mensal",
-      nome: "Mensal",
+      id: "0",
+      nome: "gratuito",
       preco: 9.9,
       precoAntigo: null,
       destaque: false,
       descricao: "Pagamento mensal recorrente",
     },
     {
-      id: "anual",
-      nome: "Anual",
+      id: "1",
+      nome: "basico",
       preco: 59.9,
       precoAntigo: 99.9,
       destaque: true,
       descricao: "Economize 40% no plano anual",
     },
     {
-      id: "eterno",
-      nome: "Para Sempre",
+      id: "2",
+      nome: "intermediario",
+      preco: 19.9,
+      precoAntigo: 39.9,
+      destaque: false,
+      descricao: "Pagamento único vitalício",
+    },
+      {
+      id: "3",
+      nome: "premio",
       preco: 19.9,
       precoAntigo: 39.9,
       destaque: false,
@@ -241,7 +250,8 @@ export class CriarPagina implements AfterViewInit {
         nonNullable: true,
         validators: [Validators.required, Validators.minLength(10)],
       }),
-      plano: this.fb.control<"eterno" | "anual" | "mensal" | "">("", {
+
+      plano: this.fb.control<"gratuito" | "basico" | "intermediario" | "premio" | "">("", {
         nonNullable: true,
         validators: Validators.required,
       }),
@@ -578,58 +588,224 @@ export class CriarPagina implements AfterViewInit {
       const body: IAutenticarEmailRequisicao = {
         email: email,
       };
-      await this.apiService.postAutenticaEmail(body);
+     const momentoEnvio = await this.apiService.postAutenticaEmail(body);
+      this.localStorageService.atualizarDadosDaSessao({
+        codigoValidacaoEmailTime: momentoEnvio
+      });
 
       this.localStorageService.atualizarDadosDaSessao({
         role: undefined,
-        tokenValidacao: undefined,
+        codigoValidacaoEmail: undefined,
       });
       //  se chegou aqui está válido
-      this.exibeOtaConfirmcaoCodigo();
+  const sucesso =  await this.exibeOtaConfirmcaoCodigo(body);
+console.log('sucesso', sucesso)
+  if (sucesso) {
+
+
+const draft: CriarPaginaStorage | undefined = await this.indexedDbStorageService.get("draft");
+
+
+  if (this.f.plano.value === 'gratuito') {
+this.planoSelecionado = 0
+}
+
+if (this.f.plano.value === 'basico') {
+this.planoSelecionado = 1
+}
+
+if (this.f.plano.value === 'intermediario') {
+this.planoSelecionado = 2
+
+}
+if (this.f.plano.value === 'premio') {
+this.planoSelecionado = 3
+
+}//
+  const retornoCriarPedido: ICriarPedidoResposta = await this.apiService.postCriarPedido(this.planoSelecionado);
+  if(retornoCriarPedido?.id && draft){
+
+
+  const formData = new FormData();
+
+  const videoUrl = draft.musica?.tipo === TIPO_MUSICA.SUGESTAO ? draft.musica.url : '';
+
+  formData.append('videoUrl', videoUrl);
+  formData.append('primeiroNomeCasal', draft.dados.nome1);
+  formData.append('segundoNomeCasal', draft.dados.nome2);
+  formData.append('dataInicioRelacionamento', draft.dados.dataEspecial ?? '');
+  formData.append('texto', draft.dados.mensagem);
+  formData.append('plano', draft.dados.plano.toString());
+  draft.fotos.forEach(foto => {formData.append('fotos', foto.file);});
+  formData.append('idPedido', retornoCriarPedido.toString());
+
+
+const retorno:ICriarRascunhoResposta = await this.apiService.postCriarRascunho(formData);
+console.log('retorno', retorno);
+
+  }
+
+            // this.router.navigate([PATH_MODULO.ACESSO, PATH_ACESSO.LOGIN]);
+
+
+
+
+
+  }
+
+
     } catch (error: unknown) {
       const sessao = await this.obterSessao();
 
       this.erroGenericoApiBusiness = this.capturaErros(error);
       if (
-        this.erroGenericoApiBusiness?.code ===
-          CODIGO_ERRO_API.Autenticacao.UltimoTokenAindaValido &&
-        sessao?.tokenValidacao
-      ) {
-        this.tentaRegistrarUsuarioNovamente(sessao.tokenValidacao);
+        this.erroGenericoApiBusiness?.code === CODIGO_ERRO_API.Autenticacao.UltimoTokenAindaValido && sessao?.codigoValidacaoEmail) {
+        this.tentaRegistrarUsuarioNovamente(sessao.codigoValidacaoEmail);
       }
     }
   }
+
+
+
+
   async tentaRegistrarUsuarioNovamente(tokenInformado: string) {
     try {
-      const body: IRegistrarUsuarioRequisicao = {
-        nome: `${this.f.nome1.value} & ${this.f.nome2.value}`,
-        email: this.f.email.value,
-        senha: this.f.senha.value,
-        token: Number(tokenInformado),
-      };
-      this.retornoRegistraUsuario =
-        await this.apiService.postRegistrarUsuario(body);
-    } catch (error: unknown) {
+    const body: IRegistrarUsuarioRequisicao = {
+      nome: `${this.f.nome1.value} & ${this.f.nome2.value}`,
+      email: this.f.email.value,
+      senha: this.f.senha.value,
+      token: Number(tokenInformado),
+    };
+    console.log('postRegistrarUsuario2');
+
+      this.retornoRegistraUsuario = await this.apiService.postRegistrarUsuario(body);
+    }
+    catch (error: unknown) {
       this.erroGenericoApiBusiness = this.capturaErros(error);
       this.trataErrosDeRegistroUsuario();
     }
   }
 
-  async exibeOtaConfirmcaoCodigo() {
+
+
+
+
+
+
+
+
+async exibeOtaConfirmcaoCodigo( requisicao: IAutenticarEmailRequisicao ): Promise<boolean> {
+
+  const formCodigo = this.dialog.open(ConfirmarCodigoComponent, {
+    width: '400px',
+    disableClose: true,
+  });
+
+  return new Promise<boolean>((resolve) => {
+
+    formCodigo.componentInstance.respostaOta.subscribe(
+      async (tokenDigitado: number) => {
+
+        try {
+
+          if (tokenDigitado === CODIGO_OTA.REENVIAR) {
+            const momentoEnvio =
+              await this.apiService.postAutenticaEmail(requisicao);
+
+            this.localStorageService.atualizarDadosDaSessao({
+              codigoValidacaoEmailTime: momentoEnvio
+            });
+
+            resolve(false);
+            return;
+          }
+
+          const body: IRegistrarUsuarioRequisicao = {
+            nome: `${this.f.nome1.value} & ${this.f.nome2.value}`,
+            email: this.f.email.value,
+            senha: this.f.senha.value,
+            token: tokenDigitado,
+          };
+
+          this.retornoRegistraUsuario =
+            await this.apiService.postRegistrarUsuario(body);
+
+          if (this.retornoRegistraUsuario?.tokenJwt) {
+            formCodigo.close(tokenDigitado);
+                        this.localStorageService.atualizarDadosDaSessao({
+              tokenAutenticacao:
+                this.retornoRegistraUsuario?.tokenJwt
+            });
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+
+        } catch (error) {
+
+          this.erroGenericoApiBusiness =
+            this.capturaErros(error);
+
+          if (
+            this.erroGenericoApiBusiness?.code ===
+            CODIGO_ERRO_API.Usuario.EmailJaCadastrado
+          ) {
+
+            formCodigo.close(tokenDigitado);
+
+            this.localStorageService.atualizarDadosDaSessao({
+              tokenAutenticacao:
+                this.erroGenericoApiBusiness?.data?.tokenJwt
+            });
+
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        }
+      }
+    );
+  });
+}
+
+
+
+
+
+
+
+
+/*
+  async exibeOtaConfirmcaoCodigo(requisicao: IAutenticarEmailRequisicao) {
     const formCodigo = this.dialog.open(ConfirmarCodigoComponent, {
       width: "400px",
       disableClose: true,
     });
 
-    formCodigo.componentInstance.codigoConfirmado.subscribe(
-      async (tokenDigitado: string) => {
+    formCodigo.componentInstance.respostaOta.subscribe(
+      async (tokenDigitado: number) => {
+
+          //  const tokenDigitado = respostaOta
+
+if (tokenDigitado === CODIGO_OTA.REENVIAR){
+     const momentoEnvio = await this.apiService.postAutenticaEmail(requisicao);
+           this.localStorageService.atualizarDadosDaSessao({
+        codigoValidacaoEmailTime: momentoEnvio
+      });
+  return ;
+}
+
+// if (respostaOta > 0) return;
+
         const body: IRegistrarUsuarioRequisicao = {
           nome: `${this.f.nome1.value} & ${this.f.nome2.value}`,
           email: this.f.email.value,
           senha: this.f.senha.value,
-          token: Number(tokenDigitado),
+          token: tokenDigitado,
         };
         try {
+          console.log('postRegistrarUsuario1');
+
           this.retornoRegistraUsuario =
             await this.apiService.postRegistrarUsuario(body);
           console.log(
@@ -638,21 +814,57 @@ export class CriarPagina implements AfterViewInit {
           );
           if (this.retornoRegistraUsuario?.tokenJwt) {
             formCodigo.close(tokenDigitado);
-          }
+            return true;
+            } else {
+              return false;
+            }
+
         } catch (error: unknown) {
           this.erroGenericoApiBusiness = this.capturaErros(error);
-          console.log("erroGenericoApiBusiness", this.erroGenericoApiBusiness);
 
+
+ if (this.erroGenericoApiBusiness?.code === CODIGO_ERRO_API.Usuario.EmailJaCadastrado ) {
+            formCodigo.close(tokenDigitado); //não sei praque coloquei esse tokenDigitado aqui no catch
+
+             this.localStorageService.atualizarDadosDaSessao({
+tokenAutenticacao: this.erroGenericoApiBusiness?.data?.tokenJwt
+      })
+
+      return true;
+       } else {
+
+         return false;
+        }
+
+        /*
+        //para verificar conta existente e e-mail ja cadastrado
           this.trataErrosDeRegistroUsuario(tokenDigitado, formCodigo);
+          *//*
         }
       },
     ); //IErroGenerico
-  }
+  }*/
+
+
+
+
+
+
+
+
+
+
+
+
+
   async trataErrosDeRegistroUsuario(
-    tokenInformado?: string,
+    tokenInformado?: number,
     formCodigo?: MatDialogRef<ConfirmarCodigoComponent, any>,
   ) {
+    //para verificar conta existente e e-mail ja cadastrado deve-se remover trechoDesativadoTemporariamente
+    const trechoDesativadoTemporariamente = false;
     if (
+      trechoDesativadoTemporariamente !==  false &&
       this.erroGenericoApiBusiness?.code ===
       CODIGO_ERRO_API.Usuario.EmailJaCadastrado
     ) {
@@ -677,7 +889,7 @@ export class CriarPagina implements AfterViewInit {
           if (tokenInformado) {
             this.localStorageService.atualizarDadosDaSessao({
               role: undefined,
-              tokenValidacao: tokenInformado,
+              codigoValidacaoEmail: tokenInformado.toString(),
             });
           }
         }
