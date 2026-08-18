@@ -37,6 +37,7 @@ export const CODIGO_ERRO_API = {
     RascunhoNaoEncontrado: 152,
     PaginaNaoEncontrada: 153,
     PaginaNaoEncontradaPorId: 154,
+    ParametroEObrigatorio: 155,
   },
 
   Rascunho: {

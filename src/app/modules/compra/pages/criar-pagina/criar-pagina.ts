@@ -593,15 +593,15 @@ export class CriarPagina implements AfterViewInit {
         codigoValidacaoEmailTime: momentoEnvio
       });
 
-      this.localStorageService.atualizarDadosDaSessao({
-        role: undefined,
-        codigoValidacaoEmail: undefined,
-      });
+
       //  se chegou aqui está válido
+      console.log('antes codigo1');
+
   const sucesso =  await this.exibeOtaConfirmcaoCodigo(body);
 console.log('sucesso', sucesso)
   if (sucesso) {
 
+            console.log('entrou no if sucesso');
 
 const draft: CriarPaginaStorage | undefined = await this.indexedDbStorageService.get("draft");
 
@@ -622,7 +622,10 @@ if (this.f.plano.value === 'premio') {
 this.planoSelecionado = 3
 
 }//
+
   const retornoCriarPedido: ICriarPedidoResposta = await this.apiService.postCriarPedido(this.planoSelecionado);
+              console.log('fez pedido', retornoCriarPedido);
+
   if(retornoCriarPedido?.id && draft){
 
 
@@ -659,13 +662,49 @@ console.log('retorno', retorno);
 
       this.erroGenericoApiBusiness = this.capturaErros(error);
       if (
-        this.erroGenericoApiBusiness?.code === CODIGO_ERRO_API.Autenticacao.UltimoTokenAindaValido && sessao?.codigoValidacaoEmail) {
+        this.erroGenericoApiBusiness?.code === CODIGO_ERRO_API.Autenticacao.UltimoTokenAindaValido && sessao?.codigoValidacaoEmail)
+        {
+          console.log('caiu no cach erro mapeado 2');
         this.tentaRegistrarUsuarioNovamente(sessao.codigoValidacaoEmail);
+
+      }
+      if( this.erroGenericoApiBusiness?.code === CODIGO_ERRO_API.Pedido.PedidoPendenteExistente) {
+       console.log('caiu no cach erro não mapeado 2');
+       this.alertaPedidoExistente();
       }
     }
   }
 
 
+
+  alertaPedidoExistente(){
+    const pedidoExistente = this.globalService.exibeAlertaConfirmacao(
+        `Você já possui um pedido aguardando pagamento: ${this.f.email.value}`,
+        "Deseja continuar com ele?",
+      );
+      pedidoExistente.afterClosed().subscribe(async (resposta) => {
+        if (resposta === MODAL_RESPOSTA.SIM) {
+          this.router.navigate([PATH_MODULO.ACESSO, PATH_ACESSO.LOGIN]);
+          console.log("disse sim");
+        }
+        if(resposta === MODAL_RESPOSTA.NAO) {
+          console.log("disse não");
+
+          this.f.email.setErrors({ emailJaCadastrado: true });
+          this.f.email.markAsTouched();
+          this.mensagemEmailErro =
+            "Este e-mail já está cadastrado. Por favor, insira outro ou faça login.";
+          this.emailJaCadastradoErro = true;
+
+          // if (tokenInformado) {
+          //   this.localStorageService.atualizarDadosDaSessao({
+          //     role: undefined,
+          //     codigoValidacaoEmail: tokenInformado.toString(),
+          //   });
+          // }
+        }
+      });
+  }
 
 
   async tentaRegistrarUsuarioNovamente(tokenInformado: string) {
@@ -676,13 +715,15 @@ console.log('retorno', retorno);
       senha: this.f.senha.value,
       token: Number(tokenInformado),
     };
-    console.log('postRegistrarUsuario2');
+    console.log('tenta registrar usuarionovamente');
 
       this.retornoRegistraUsuario = await this.apiService.postRegistrarUsuario(body);
     }
     catch (error: unknown) {
       this.erroGenericoApiBusiness = this.capturaErros(error);
       this.trataErrosDeRegistroUsuario();
+      console.log('caiu no cach ao tentaRegistrarUsuarioNovamente');
+
     }
   }
 
@@ -707,10 +748,15 @@ async exibeOtaConfirmcaoCodigo( requisicao: IAutenticarEmailRequisicao ): Promis
       async (tokenDigitado: number) => {
 
         try {
-
+      console.log('abriu codigo1');
+      this.localStorageService.atualizarDadosDaSessao({
+        role: undefined,
+        codigoValidacaoEmail: undefined,
+      });
           if (tokenDigitado === CODIGO_OTA.REENVIAR) {
             const momentoEnvio =
               await this.apiService.postAutenticaEmail(requisicao);
+      console.log('Autentica email', momentoEnvio);
 
             this.localStorageService.atualizarDadosDaSessao({
               codigoValidacaoEmailTime: momentoEnvio
@@ -719,6 +765,11 @@ async exibeOtaConfirmcaoCodigo( requisicao: IAutenticarEmailRequisicao ): Promis
             resolve(false);
             return;
           }
+
+            this.localStorageService.atualizarDadosDaSessao({
+        role: undefined,
+        codigoValidacaoEmail: tokenDigitado.toString(),
+      });
 
           const body: IRegistrarUsuarioRequisicao = {
             nome: `${this.f.nome1.value} & ${this.f.nome2.value}`,
@@ -729,27 +780,25 @@ async exibeOtaConfirmcaoCodigo( requisicao: IAutenticarEmailRequisicao ): Promis
 
           this.retornoRegistraUsuario =
             await this.apiService.postRegistrarUsuario(body);
+      console.log('Registrou usuário', this.retornoRegistraUsuario);
 
           if (this.retornoRegistraUsuario?.tokenJwt) {
             formCodigo.close(tokenDigitado);
-                        this.localStorageService.atualizarDadosDaSessao({
-              tokenAutenticacao:
-                this.retornoRegistraUsuario?.tokenJwt
-            });
-            resolve(true);
+            this.localStorageService.atualizarDadosDaSessao({tokenAutenticacao: this.retornoRegistraUsuario?.tokenJwt});
+            console.log('colocou token localstorage');
+
+                        resolve(true);
           } else {
             resolve(false);
           }
 
         } catch (error) {
 
-          this.erroGenericoApiBusiness =
-            this.capturaErros(error);
+          this.erroGenericoApiBusiness = this.capturaErros(error);
+            console.log('Caiu no catch antes do if');
 
-          if (
-            this.erroGenericoApiBusiness?.code ===
-            CODIGO_ERRO_API.Usuario.EmailJaCadastrado
-          ) {
+
+          if ( this.erroGenericoApiBusiness?.code === CODIGO_ERRO_API.Usuario.EmailJaCadastrado) {
 
             formCodigo.close(tokenDigitado);
 
@@ -757,9 +806,12 @@ async exibeOtaConfirmcaoCodigo( requisicao: IAutenticarEmailRequisicao ): Promis
               tokenAutenticacao:
                 this.erroGenericoApiBusiness?.data?.tokenJwt
             });
+            console.log('Caiu no catch fechou modal');
+            console.log('Caiu no catch armazenou token local storage');
 
             resolve(true);
           } else {
+            console.log('Caiu no catch erro não tratado');
             resolve(false);
           }
         }
